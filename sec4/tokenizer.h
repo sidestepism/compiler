@@ -1,5 +1,5 @@
 // tokenizer.h
-
+#pragma once
 
 typedef enum {
 	tok_eof,
@@ -15,18 +15,24 @@ typedef struct token
 {
 	token_kind_t kind;
 	int ival;
-	int line;
-	int ch;
 } token_t;
 
 typedef struct tokenizer
 {
-	token tok;
+	struct token tok;
 	int c;
-	FILE* fp;
+	int line;
+	int ch;
+	int byte;
+	FILE * fp;
 } * tokenizer_t;
+
  
 tokenizer_t mk_tokenizer(char * filename);
-token cur_tok(tokenizer_t t);
-token next_tok(tokenizer_t t);
-token syntax_error(token tok);
+
+struct token cur_tok(tokenizer_t t);
+
+tokenizer_t next_tok(tokenizer_t t);
+
+void syntax_error(tokenizer_t tok);
+
