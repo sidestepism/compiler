@@ -126,11 +126,15 @@ void eat_plus(tokenizer_t t){
   next_tok(t);
 }
 
+void reset_num(tokenizer_t t){
+  t->num = 0;
+}
+
 int main(int argc, char ** argv){
   tokenizer_t t = mk_tokenizer(argv[1]);
   while(cur_tok(t).kind != tok_eof){
     if(cur_tok(t).kind == tok_nl){
-      t->num = 0;
+      reset_num(t);
       next_tok(t);
     }
     else{
@@ -140,7 +144,7 @@ int main(int argc, char ** argv){
         int y = eat_int(t);
         x = x + y;
       }
-      t->num = 0;
+      reset_num(t);
       next_tok(t);
       printf("sum = %d\n", x);
     }
