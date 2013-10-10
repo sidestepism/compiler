@@ -3,14 +3,14 @@
 #define case_x(k) case k: printf("%d:%s\n", t->line, #k); break
 
 
-void syntax_error(tokenizer_t t){
+void syntax_error(tokenizer_t t, char *msg){
   int c = t->c;
   FILE *fp = t->fp;
   int num = t->num;
   while(c != '\n'){
     c = next_char(t);
   }
-  printf("syntax error :%d:%d\n", t->line, num);
+  printf("syntax error :%d:%d %s\n", t->line, num, msg);
   int i;
   for(i = 0; i < num-1; i++){printf(" ");}
   printf("^\n");
@@ -26,9 +26,9 @@ int next_char(tokenizer_t t){
 tokenizer_t tokenize(tokenizer_t t){
   int c = t->c;
   FILE *fp = t->fp;
-  if (t->num > 50) syntax_error(t);
+  if (t->num > 65535) syntax_error(t, "too long");
 
-  while (c == ' ' || c == '\n'){ // 連続する改行とスペースを飛ばす
+  while (c == ' ' || c == '\n' || c == '\t'){ // 連続する改行とスペースを飛ばす
     if(c == '\n'){
       // 改行の場合
       t->line++;
@@ -113,14 +113,14 @@ tokenizer_t tokenize(tokenizer_t t){
       default:
         // ID
         ;
-        char name[1024] = {};
+        char name[65536] = {};
         int i = 1;
         if(c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')){
           name[0] = c;
           while(t->c == '_' || (t->c >= 'a' && t->c <= 'z') || (t->c >= 'A' && t->c <= 'Z') || (t->c >= '0' && t->c <= '9')){
-            if(i == 1023){
+            if(i == 65535){
               // too long id (length must be <= 50)
-              syntax_error(t);
+              syntax_error(t, "too long id");
             }
             name[i++] = t->c;
             t->c = next_char(t);
@@ -147,7 +147,8 @@ tokenizer_t tokenize(tokenizer_t t){
             strcpy(t->tok.name, name);            
           }
         }else{
-          syntax_error(t);
+          printf("%d\n", c);
+          syntax_error(t, "invalid symbol");
         }
         break;
     }
@@ -159,7 +160,7 @@ tokenizer_t tokenize(tokenizer_t t){
       val = val * 10 + (t->c - '0');
       if(i++ == 10){
         // too long int_literal (length must be <= 10)
-        syntax_error(t);
+        syntax_error(t, "too long int literal");
       }
       t->c = next_char(t);
     }while(t->c >= '0' && t->c <= '9');
@@ -174,8 +175,8 @@ tokenizer_t mk_tokenizer(char *filename){
   tokenizer_t t = (tokenizer_t)malloc(sizeof(struct tokenizer));
   FILE *fp = fopen(filename, "rb");
   if(fp == NULL){printf("can't open file\n");exit(1);}
-  t->c = next_char(t);
   t->fp = fp;
+  t->c = next_char(t);
   t->line = 1;
   t->num = 0;
   return tokenize(t);

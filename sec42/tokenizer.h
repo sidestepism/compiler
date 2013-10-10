@@ -51,7 +51,7 @@ typedef struct tokenizer{
   int num;
 } *tokenizer_t;
 
-void syntax_error(tokenizer_t t);
+void syntax_error(tokenizer_t t, char *msg);
 tokenizer_t tokenize(tokenizer_t t);
 tokenizer_t mk_tokenizer(char *filename);
 token cur_tok(tokenizer_t t);
