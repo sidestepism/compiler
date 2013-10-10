@@ -2,7 +2,6 @@
 
 #define case_x(k) case k: printf("%d:%s\n", t->line, #k); break
 
-
 void syntax_error(tokenizer_t t, char *msg){
   int c = t->c;
   FILE *fp = t->fp;
@@ -10,9 +9,25 @@ void syntax_error(tokenizer_t t, char *msg){
   while(c != '\n'){
     c = next_char(t);
   }
-  printf("syntax error :%d:%d %s\n", t->line, num, msg);
+  printf("syntax error :%d:%d %s\n--------------", t->line, num, msg);
+
+  fseek(fp, 0, SEEK_SET);
+
+  int l = t->line -1;
+  while(l --){
+    while((c = fgetc(fp)) != '\n' && c != EOF){
+
+    }
+  }
+  // 前の行まで seek した
+
+  do{
+    printf("%c", c);
+  }while((c = fgetc(fp)) != '\n' && c != EOF);
+  printf("\n");
+
   int i;
-  for(i = 0; i < num-1; i++){printf(" ");}
+  for(i = 0; i < num - 2; i++){printf(" ");}
   printf("^\n");
   exit(1);
 }
@@ -205,6 +220,9 @@ token next_tok(tokenizer_t t){
 // }
 
 void output_token(tokenizer_t t){
+  if(t == NULL){
+    printf("t == NULL\n");
+  }
   if(t->tok.kind == TOK_ID){
     printf("%d:TOK_ID (%s)\n", t->line, t->tok.name);
   }else if(t->tok.kind == TOK_INT_LITERAL){
