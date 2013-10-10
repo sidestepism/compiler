@@ -70,17 +70,59 @@ tokenizer_t tokenize(tokenizer_t t){
   char a[10];
   FILE *fp = t->fp;
   if (t->num > 50) syntax_error(t);
-  while (c == ' '){
+  while (c == ' '){//スペース飛ばす
     t->error[t->num] = c;
     t->num++;
     c = fgetc(fp);
   }
-  if (!isdigit(c)){
+  if (!isdigit(c)){//数字じゃない時
     t->error[t->num] = c;
     t->num++;
     switch (c){
       case  '+':
-        t->tok.kind = tok_plus;
+        t->tok.kind = TOK_PLUS;
+        break;
+      case '(':
+        t->tok.kind = TOK_LPAREN;
+        break;
+      case ')':
+        t->tok.kind = TOK_RPAREN;
+        break;
+      case '{':
+        t->tok.kind = TOK_LBRACE;
+        break;
+      case '}':
+        t->tok.kind = TOK_RBRACE;
+        break;
+      case '*':
+        t->tok.kind = TOK_MUL;
+        break;
+      case '-':
+        t->tok.kind = TOK_MINUS;
+        break;
+      case '/':
+        t->tok.kind = TOK_DIV;
+        break;
+      case '%':
+        t->tok.kind = TOK_REM;
+        break;
+      case '!':
+        t->tok.kind = TOK_BANG;
+        break;
+      case '<':
+        t->tok.kind = TOK_LT;
+        break;
+      case '>':
+        t->tok.kind = TOK_GT;
+        break;
+      case '=':
+        t->tok.kind = TOK_EQ;
+        break;
+      case ';':
+        t->tok.kind = TOK_SEMICOLON;
+        break;
+      case ',':
+        t->tok.kind = TOK_COMMA;
         break;
       case '\n':
         t->tok.kind = tok_nl;
