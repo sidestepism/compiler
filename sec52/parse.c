@@ -56,8 +56,7 @@ stmt_t parse_stmt(tokenizer_t t){
             return parse_stmt_empty(t);
         break;
         case TOK_IF:
-            // @ TODO
-            return parse_stmt_empty(t);
+            return parse_stmt_if(t);
         break;
         case TOK_WHILE:
             return parse_stmt_while(t);
@@ -77,14 +76,15 @@ stmt_t parse_stmt(tokenizer_t t){
 }
 
 
-stmt_t parse_stmt_list(tokenizer_t t){
+stmt_t parse_stmt_compound(tokenizer_t t){
     stmt_list_t list = mk_stmt_list();
     var_decl_list_t decls = mk_var_decl_list();
 
-    eat_it(t, TOK_LPAREN);
+    eat_it(t, TOK_LBRACE);
 
     while(1){
         if(cur_tok(t).kind != TOK_RPAREN){
+            //宣言
             stmt_list_add(list, parse_stmt(t));
         }else{
             // } でリスト終了
@@ -115,10 +115,21 @@ stmt_t parse_stmt_while(tokenizer_t t)
 }
 
 
+stmt_t parse_stmt_if(tokenizer_t t)
+{
+    eat_it(t, TOK_IF);
+    eat_it(t, TOK_LPAREN);
+    expr_t e = parse_expr(t);
+    eat_it(t, TOK_RPAREN);
+    stmt_t body = parse_stmt(t);
+
+    return mk_stmt_while(t->filename, t->line, e, body);
+}
+
+
 stmt_t parse_stmt_empty(tokenizer_t t)
 {
     eat_it(t, TOK_SEMICOLON);
     return mk_stmt_empty(t->filename, t->line);
 }
-
 
