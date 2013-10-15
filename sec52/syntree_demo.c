@@ -36,10 +36,8 @@ int main(int argc, char ** argv)
     W = parse_stmt(t);
   }
 
+
   pr_stmt(stdout, W);
-
-
-  return 0;
 
   // /* while (x < y) { S } */
   // stmt_t W = mk_stmt_while(f, l, 

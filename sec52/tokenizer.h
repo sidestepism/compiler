@@ -61,4 +61,5 @@ tokenizer_t mk_tokenizer(char *filename);
 token cur_tok(tokenizer_t t);
 token next_tok(tokenizer_t t);
 void output_token(tokenizer_t t);
+void output_token_kind(token_kind_t kind);
 int next_char(tokenizer_t t);

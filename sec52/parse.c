@@ -76,6 +76,7 @@ stmt_t parse_stmt(tokenizer_t t){
 
 
 
+
 stmt_t parse_stmt_compound(tokenizer_t t){
     stmt_list_t list = mk_stmt_list();
     var_decl_list_t decls = mk_var_decl_list();
@@ -161,7 +162,8 @@ stmt_t parse_stmt_expr(tokenizer_t t)
 var_decl_t parse_decl(tokenizer_t t)
 {
     eat_it(t, TOK_INT);
-    char *v = cur_tok(t).name;
+    struct token tok = cur_tok(t);
+    char *v = tok.name;
     eat_it(t, TOK_ID);
     return mk_var_decl(t->filename, t->line, v);
 }
