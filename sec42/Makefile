@@ -1,4 +1,4 @@
-CC=gcc
+CC=cc
 CFLAGS=-g
 OBJS=tokenizer.o tokenizer_main.o
 tokenizer : $(OBJS)
