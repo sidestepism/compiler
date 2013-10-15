@@ -27,6 +27,38 @@ typedef struct tokenizer
 	FILE * fp;
 } * tokenizer_t;
 
+
+typedef enum{
+  TOK_INT,
+  TOK_BREAK,
+  TOK_CONTINUE,
+  TOK_ELSE,
+  TOK_IF,
+  TOK_RETURN,
+  TOK_WHILE,
+  TOK_INT_LITERAL,
+  TOK_ID,
+  TOK_EOF,
+  TOK_LPAREN,
+  TOK_RPAREN,
+  TOK_LBRACE,
+  TOK_RBRACE,
+  TOK_MUL,
+  TOK_PLUS,
+  TOK_MINUS,
+  TOK_DIV,
+  TOK_REM,
+  TOK_BANG,
+  TOK_LT,
+  TOK_GT,
+  TOK_LE,
+  TOK_GE,
+  TOK_EQ,
+  TOK_NEQ,
+  TOK_SEMICOLON,
+  TOK_ASSIGN,
+  TOK_COMMA
+} token_kind_t;
  
 tokenizer_t mk_tokenizer(char * filename);
 

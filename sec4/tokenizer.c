@@ -14,8 +14,8 @@ tokenizer_t mk_tokenizer(char * filename)
 	t->ch = 0;
 	t->line = 1;
 	t->byte = 0;
+	
 	t->c = fgetc(t->fp);
-
 	next_tok(t);
 	// read the first token
 
