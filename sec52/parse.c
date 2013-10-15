@@ -9,6 +9,8 @@ void eat_it(tokenizer_t t, token_kind_t tok_kind){
     if (tok.kind != tok_kind){
 
         printf("expected ");
+        output_token_kind(tok_kind);
+        printf("unexpected ");
         output_token_kind(tok.kind);
         syntax_error(t, "eat_it error");
     }
@@ -76,6 +78,7 @@ stmt_t parse_stmt(tokenizer_t t){
     }
     return NULL;
 }
+
 
 
 stmt_t parse_stmt_compound(tokenizer_t t){
