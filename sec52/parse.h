@@ -8,3 +8,4 @@ stmt_t parse_stmt(tokenizer_t t);
 stmt_t parse_stmt_while(tokenizer_t t);
 stmt_t parse_stmt_empty(tokenizer_t t);
 stmt_t parse_stmt_list(tokenizer_t);
+stmt_t parse_stmt_compound(tokenizer_t);

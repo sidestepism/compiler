@@ -1,6 +1,7 @@
 #include "tokenizer.h"
 
 #define case_x(k) case k: printf("%d:%s\n", t->line, #k); break
+#define case_kx(k) case k: printf("%s\n", #k); break
 
 void syntax_error(tokenizer_t t, char *msg){
   int c = t->c;
@@ -40,7 +41,6 @@ int next_char(tokenizer_t t){
 
 tokenizer_t tokenize(tokenizer_t t){
   int c = t->c;
-  FILE *fp = t->fp;
   if (t->num > 65535) syntax_error(t, "too long");
 
   while (c == ' ' || c == '\n' || c == '\t'){ // 連続する改行とスペースを飛ばす
@@ -264,3 +264,38 @@ void output_token(tokenizer_t t){
   }
 }
 
+
+void output_token_kind(token_kind_t kind){
+    switch(kind){
+      case_kx(TOK_INT);
+      case_kx(TOK_BREAK);
+      case_kx(TOK_CONTINUE);
+      case_kx(TOK_ELSE);
+      case_kx(TOK_IF);
+      case_kx(TOK_RETURN);
+      case_kx(TOK_WHILE);
+      case_kx(TOK_INT_LITERAL);
+      case_kx(TOK_ID);
+      case_kx(TOK_EOF);
+      case_kx(TOK_LPAREN);
+      case_kx(TOK_RPAREN);
+      case_kx(TOK_LBRACE);
+      case_kx(TOK_RBRACE);
+      case_kx(TOK_MUL);
+      case_kx(TOK_PLUS);
+      case_kx(TOK_MINUS);
+      case_kx(TOK_DIV);
+      case_kx(TOK_REM);
+      case_kx(TOK_BANG);
+      case_kx(TOK_LT);
+      case_kx(TOK_GT);
+      case_kx(TOK_LE);
+      case_kx(TOK_GE);
+      case_kx(TOK_EQ);
+      case_kx(TOK_NEQ);
+      case_kx(TOK_SEMICOLON);
+      case_kx(TOK_ASSIGN);
+      case_kx(TOK_COMMA);
+   }    
+
+}
