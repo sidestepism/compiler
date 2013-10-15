@@ -49,6 +49,7 @@ typedef struct tokenizer{
   int c;
   int line;
   int num;
+  char *filename;
 } *tokenizer_t;
 
 void syntax_error(tokenizer_t t, char *msg);

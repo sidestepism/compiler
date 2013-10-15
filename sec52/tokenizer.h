@@ -1,4 +1,7 @@
 // tokenizer.h
+#pragma once
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,6 +52,7 @@ typedef struct tokenizer{
   int c;
   int line;
   int num;
+  char* filename;
 } *tokenizer_t;
 
 void syntax_error(tokenizer_t t, char *msg);
