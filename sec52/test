@@ -1,5 +1,14 @@
 while ( 1 ) {
-    ;
-    ;
-    ;
+    if(1) continue;
+    continue;
+    break;
 }
+
+if(1){
+  ;
+  ;
+  ;
+  return 1;
+}
+
+

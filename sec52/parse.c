@@ -48,16 +48,13 @@ stmt_t parse_stmt(tokenizer_t t){
         break;
 
         case TOK_CONTINUE:
-            // @ TODO
-            return parse_stmt_empty(t);
+            return parse_stmt_continue(t);
         break;
         case TOK_BREAK:
-            // @ TODO
-            return parse_stmt_empty(t);
+            return parse_stmt_break(t);
         break;
         case TOK_RETURN:
-            // @ TODO
-            return parse_stmt_empty(t);
+            return parse_stmt_return(t);
         break;
         case TOK_IF:
             return parse_stmt_if(t);
@@ -71,9 +68,7 @@ stmt_t parse_stmt(tokenizer_t t){
         break;
 
         default:
-            // これは expression では?
-            // @ TODO
-            return parse_stmt_empty(t);
+            return parse_stmt_expr(t);
         break;
     }
     return NULL;
@@ -88,7 +83,7 @@ stmt_t parse_stmt_compound(tokenizer_t t){
     eat_it(t, TOK_LBRACE);
 
     while(1){
-        if(cur_tok(t).kind != TOK_RPAREN){
+        if(cur_tok(t).kind != TOK_RBRACE){
             //宣言
             stmt_list_add(list, parse_stmt(t));
         }else{
@@ -97,7 +92,7 @@ stmt_t parse_stmt_compound(tokenizer_t t){
         }
     }
 
-    eat_it(t, TOK_RPAREN);
+    eat_it(t, TOK_RBRACE);
 
     stmt_t comp = mk_stmt_compound(t->filename, t->line, decls, list);
 
@@ -138,3 +133,35 @@ stmt_t parse_stmt_empty(tokenizer_t t)
     return mk_stmt_empty(t->filename, t->line);
 }
 
+stmt_t parse_stmt_continue(tokenizer_t t)
+{
+    eat_it(t, TOK_CONTINUE);
+    return mk_stmt_continue(t->filename, t->line);
+}
+
+stmt_t parse_stmt_break(tokenizer_t t)
+{
+    eat_it(t, TOK_BREAK);
+    return mk_stmt_break(t->filename, t->line);
+}
+
+stmt_t parse_stmt_return(tokenizer_t t)
+{
+    eat_it(t, TOK_RETURN);
+    expr_t e = parse_expr(t);
+    return mk_stmt_return(t->filename, t->line, e);
+}
+
+stmt_t parse_stmt_expr(tokenizer_t t)
+{
+    expr_t e = parse_expr(t);
+    return mk_stmt_expr(t->filename, t->line, e);
+}
+
+var_decl_t parse_decl(tokenizer_t t)
+{
+    eat_it(t, TOK_INT);
+    char *v = cur_tok(t).name;
+    eat_it(t, TOK_ID);
+    return mk_var_decl(t->filename, t->line, v);
+}
