@@ -7,7 +7,9 @@
 void eat_it(tokenizer_t t, token_kind_t tok_kind){
     struct token tok = cur_tok(t);
     if (tok.kind != tok_kind){
-        printf("expected %d\n", tok_kind);
+
+        printf("expected ");
+        output_token_kind(tok.kind);
         syntax_error(t, "eat_it error");
     }
     output_token(t);
