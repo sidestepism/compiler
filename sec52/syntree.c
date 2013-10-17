@@ -8,6 +8,7 @@
 #include "list.h"
 #include "syntree.h"
 
+
 /* 
  * ----------------------------------
  * 式のコンストラクタ達
@@ -29,7 +30,8 @@ static expr_t alloc_expr(char * filename, int line, expr_kind_t kind)
 }
 
 /* 整数リテラル (0, 1, 2, ...) の式ノードを作る */
-expr_t mk_expr_int_literal(char * filename, int line, char * i)
+expr_t mk_expr_int_literal(char * filename, int line, 
+  char * i)
 {
   expr_t e = alloc_expr(filename, line, expr_kind_int_literal);
   e->u.s = i;

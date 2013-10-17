@@ -38,6 +38,7 @@ typedef enum{
   TOK_SEMICOLON,
   TOK_ASSIGN,
   TOK_COMMA,
+  TOK_ANY // なんでもマッチする
 } token_kind_t;
 
 typedef struct token{
