@@ -12,30 +12,23 @@
 
 int main(int argc, char ** argv)
 {
-  // /* 例えば while (i < n) { p = p * i; i = i + 1; } */
-  // char * f = "p.c"; int l = 10;
-  // /* S0 : p = p * i */
-  // stmt_t S0 = mk_stmt_expr(f, l, mk_expr_bin_op(f, l, op_kind_assign,
-		// 				mk_expr_id(f, l, "p"), 
-		// 				mk_expr_bin_op(f, l, op_kind_mult, 
-		// 					       mk_expr_id(f, l, "p"), 
-		// 					       mk_expr_id(f, l, "i"))));
-  //  S1 : i = i + 1 
-  // stmt_t S1 = mk_stmt_expr(f, l, mk_expr_bin_op(f, l, op_kind_assign,
-		// 				mk_expr_id(f, l, "i"), 
-		// 				mk_expr_bin_op(f, l, op_kind_bin_plus, 
-		// 					       mk_expr_id(f, l, "i"), 
-		// 					       mk_expr_int_literal(f, l, "1"))));
-  // stmt_list_t S = mk_stmt_list();
-  // stmt_list_add(S, S0);
-  // stmt_list_add(S, S1);
+  // // char_buf のテスト
+  // int i;
+  // char_buf_t* buf1 = mk_char_buf();
+  // for(i = 0; i < 10000; i++){
+  //   push_charbuf(buf1, 'a' + i % 10);
+  // }
+  // printf("%s\n", get_body_charbuf(buf1));
+  // printf("%d\n", get_length_charbuf(buf1));
+  // clear_charbuf(buf1);
+  // free_charbuf(buf1);
 
   tokenizer_t t = mk_tokenizer(argv[1]);
   stmt_t W;
+
   while(cur_tok(t).kind != TOK_EOF){
     W = parse_stmt(t);
   }
-
 
   pr_stmt(stdout, W);
 

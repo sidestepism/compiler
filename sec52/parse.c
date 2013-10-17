@@ -20,8 +20,12 @@ void eat_it(tokenizer_t t, token_kind_t tok_kind){
 
 expr_t parse_unary_expr(tokenizer_t t){
     // struct token tok = cur_tok(t);
+
+    char* literal = get_copy_charbuf(t->token_buf);
+
     eat_it(t, TOK_INT_LITERAL);
-    return mk_expr_int_literal(t->filename, t->line, "int");
+
+    return mk_expr_int_literal(t->filename, t->line, literal);
 }
 
 /**
