@@ -18,26 +18,150 @@ void eat_it(tokenizer_t t, token_kind_t tok_kind){
     next_tok(t);
 }
 
-expr_t parse_unary_expr(tokenizer_t t){
-    // struct token tok = cur_tok(t);
-    eat_it(t, TOK_INT_LITERAL);
-    return mk_expr_int_literal(t->filename, t->line, "int");
-}
 
 /**
  * parse expression
  */
-expr_t parse_expr(tokenizer_t t){
+expr_t parse_expr(tokenizer_t t)i{
+    expr_t expr;
+    xpr_list_t list = mk_expr_list();
     struct token tok = cur_tok(t);
-    switch(tok.kind){
-        case TOK_INT_LITERAL:
-            return parse_unary_expr(t);
-        break;
-        default:
-            syntax_error(t, "parse_expr error");
-        break;
+    expr_list_add(list, parse_eq_expr(t));
+    while(expr = parse_expr(t)){
+      expr_list_add(list, expr);
     }
-    return NULL;
+  /*要修正*/
+    expr = mk_expr_call(t->filename, t->line, list) //?
+    return expr;
+}
+
+expr_t parse_eq_expr(tokenizer_t t){
+  struct token tok = cur_tok(t);
+  expr_list_t list = mk_expr_list();
+  expr_list_add(list, parse_relat_expr(t));
+  while(1)
+  {
+    if(tok.kind == TOK_EQ || TOK_NEQ)
+    {
+      tok.next;
+      expr_list_add(list, parse_relat_expr(t));
+    }
+    else break;
+  }
+  expr_t expr = mk_expr_;
+  return;
+}
+
+expr_t parse_relat_expr(tokenizer_t t){
+  struct token tok = cur_tok(t);
+  expr_list_t list = mk_expr_list();
+  expr_list_add(list, parse_add_expr(t));
+  while(1)
+  {
+    if(tok.kind == TOK_LT || TOK_GT || TOK_LE || TOK_GE)
+    {
+      tok.next;
+      expr_list_add(list, parse_add_expr(t));
+    }
+    else break;
+  }
+  expr_t expr = ;
+  return;
+}
+
+expr_t parse_add_expr(tokenizer_t t){
+  struct token tok = cur_tok(t);
+  expr_list_t list = mk_expr_list(t);
+  expr_list_add(list, parse_mult_expr(t));
+  while(1)
+  {
+    if(tok.kind == TOK_PLUS || TOK_MINUS)
+    {
+      tok.next;
+      expr_list_add(list, parse_mult_expr(t));
+    }
+    else break;
+  }
+  expr_t expr = ;
+  return;
+}
+
+expr_t parse_mult_expr(tokenizer_t t){
+  expr_list_t list = mk_expr_list(t);
+  expr_list_add(list, parse_unary_expr(t));
+  while(1)
+  {
+    if(tok.kind == TOK_MUL || TOK_DIV || TOK_REM)
+    {
+      tok.next;
+      expr_list_add(list, parse_unary_expr(t));
+    }
+    else break
+  }
+  expr_t expr = ;
+  return;
+}
+
+expr_t parse_intlit_expr(tokenizer_t t){
+    return mk_expr_int_literal(t->filename, t->line, "int");
+}
+
+expr_t parse_id_expr(tokenizer_t t){
+  expr_list_t list = mk_expr_list(t);
+  char *name = t->name;
+  eat_it(t, TOK_ID);
+  while(1)
+  {
+    if(eat_it(t, LPAREN))
+    {
+      parse_arg_expr(t);
+      eat_it(t, RPAREN);
+    }
+    else
+    {
+      return mk_expr_id(t->filename, t->line, name);
+  }
+  return mk_expr_call(t->filename, t->line, name, list);
+}
+
+expr_t parse_paren_expr(tokenizer_t t)
+{
+  eat_it(t, TOK_LPAREN);
+  expr_t expr = parse_expr(t);
+  eat_it(t, TOK_RPAREN);
+  return mk_expr_paren(t->filename, t->line, expr);
+}
+
+expr_t parse_op_expr(tokenizer_t t)
+{
+  if(eat_it(t, TOK_BANG))
+  {
+    expr_t expr = parse_unary_expr(t);
+    
+    return mk_expr_un_op(t->filename, t->line, expr);
+  return mk_expr_
+
+expr_t parse_unary_expr(tokenizer_t t)
+{
+  struct token tok = cur_tok(t);
+  switch(tok.kind){
+    case TOK_INT_LITERAL:
+      return parse_initlit_expr(t);
+      break;
+    case TOK_ID;
+      return parse_id_expr(t);
+      break;
+    case TOK_LPAREN;
+      return parse_paren_expr(t);
+      break;
+    case TOK_PLUS || TOK_MINUS || TOK_BANG
+      return parse_op_expr(tokenizer_t t);
+      break;
+    default:
+      syntax_error(t, "parse_expr error");
+      break;
+  }
+  return NULL;
 }
 
 stmt_t parse_stmt(tokenizer_t t){
