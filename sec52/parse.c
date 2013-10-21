@@ -159,6 +159,18 @@ stmt_t parse_stmt_expr(tokenizer_t t)
     return mk_stmt_expr(t->filename, t->line, e);
 }
 
+stmt_t parse_fun_def(tokenizer_t t)
+{
+    // 型宣言を食べる (int 以外に増やすなら変える)
+    eat_it(t, TOK_INT);
+    struct token tok = cur_tok(t);
+    char *v = tok.name;
+
+    eat_it(t, TOK_ID);
+
+
+}
+
 var_decl_t parse_decl(tokenizer_t t)
 {
     eat_it(t, TOK_INT);
