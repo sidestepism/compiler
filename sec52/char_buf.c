@@ -7,7 +7,7 @@
 char_buf_t * mk_char_buf()
 {
 	// 初期設定
-	int length = 1024;
+	int length = 32;
 
 	char_buf_t* buf = (char_buf_t *) malloc(sizeof(char_buf_t));
 	buf->body = (char *) malloc(sizeof(char) * length);

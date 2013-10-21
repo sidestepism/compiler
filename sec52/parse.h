@@ -26,6 +26,10 @@ expr_t parse_op_expr(tokenizer_t t);
 expr_t parse_unary_expr(tokenizer_t t);
 expr_t parse_expr(tokenizer_t t);
 
+var_decl_t parse_decl(tokenizer_t t);
+fun_def_t parse_fun_def(tokenizer_t t);
+
+
 expr_list_t parse_arg_expr(tokenizer_t t);
 
 void expr_list_add(expr_list_t l, expr_t x);

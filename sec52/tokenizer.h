@@ -44,7 +44,7 @@ typedef enum{
 typedef struct token{
   token_kind_t kind;
   int ival;
-  char name[1024];
+  char* name;
   char_buf_t* literal;
 } token;
 

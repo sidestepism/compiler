@@ -281,8 +281,17 @@ stmt_t parse_stmt_compound(tokenizer_t t){
     eat_it(t, TOK_LBRACE);
 
     while(1){
+        // 型宣言じゃなかったら修了
+        if(cur_tok(t).kind != TOK_INT){
+            break;
+        }else{
+            var_decl_list_add(decls, parse_decl(t));
+        }
+    }
+
+
+    while(1){
         if(cur_tok(t).kind != TOK_RBRACE){
-            //宣言
             stmt_list_add(list, parse_stmt(t));
         }else{
             // } でリスト終了
@@ -321,7 +330,16 @@ stmt_t parse_stmt_if(tokenizer_t t)
     eat_it(t, TOK_RPAREN);
     stmt_t body = parse_stmt(t);
 
-    return mk_stmt_while(t->filename, t->line, e, body);
+    stmt_t else_body;
+    if(cur_tok(t).kind == TOK_ELSE){
+        eat_it(t, TOK_ELSE);
+        else_body = parse_stmt(t);
+    }else{
+        // else はまだ空文
+        else_body = mk_stmt_empty(t->filename, t->line);
+    }
+
+    return mk_stmt_if(t->filename, t->line, e, body, else_body);
 }
 
 
@@ -334,12 +352,14 @@ stmt_t parse_stmt_empty(tokenizer_t t)
 stmt_t parse_stmt_continue(tokenizer_t t)
 {
     eat_it(t, TOK_CONTINUE);
+    eat_it(t, TOK_SEMICOLON);
     return mk_stmt_continue(t->filename, t->line);
 }
 
 stmt_t parse_stmt_break(tokenizer_t t)
 {
     eat_it(t, TOK_BREAK);
+    eat_it(t, TOK_SEMICOLON);
     return mk_stmt_break(t->filename, t->line);
 }
 
@@ -347,43 +367,80 @@ stmt_t parse_stmt_return(tokenizer_t t)
 {
     eat_it(t, TOK_RETURN);
     expr_t e = parse_expr(t);
+    eat_it(t, TOK_SEMICOLON);
     return mk_stmt_return(t->filename, t->line, e);
 }
 
 stmt_t parse_stmt_expr(tokenizer_t t)
 {
     expr_t e = parse_expr(t);
-    return mk_stmt_expr(t->filename, t->line, e);
+    eat_it(t, TOK_SEMICOLON);
+   return mk_stmt_expr(t->filename, t->line, e);
 }
 
 fun_def_t parse_fun_def(tokenizer_t t)
 {
     // 型宣言を食べる (int 以外に増やすなら変える)
     eat_it(t, TOK_INT);
+
     struct token tok = cur_tok(t);
     char *f = tok.name;
+    eat_it(t, TOK_ID);
+
+
     eat_it(t, TOK_LPAREN);
-    var_decl_list_t params = mk_var_decl_list;
+    var_decl_list_t params = mk_var_decl_list(t);
+
+    while(1){
+        if(cur_tok(t).kind == TOK_RPAREN){
+            break;
+        }else{
+            var_decl_list_add(params, parse_decl(t));
+            if(cur_tok(t).kind == TOK_COMMA){
+                eat_it(t, TOK_COMMA);
+                continue;
+            }else{
+                break;
+            }
+        }
+    }
     eat_it(t, TOK_RPAREN);
-    eat_it(t, TOK_LBRACE);
-    expr_t body = parse_expr(t);
-    eat_it(t, TOK_RBRACE)
+
+    stmt_t body = parse_stmt_compound(t);
     return mk_fun_def(t->filename, t->line, f, params, body);
 }
 
+/*
 program_t parse_program(tokenizer_t t)
 {
     fun_def_list_t list = mk_fun_def_list();
     
 }
-
+*/
 
 
 var_decl_t parse_decl(tokenizer_t t)
 {
     eat_it(t, TOK_INT);
+    
     struct token tok = cur_tok(t);
-    char *v = tok.name;
+    char *v = (char *)malloc(sizeof(char) * strlen(tok.name));
+    strcpy(v, tok.name);
+
     eat_it(t, TOK_ID);
+    eat_it(t, TOK_SEMICOLON);
     return mk_var_decl(t->filename, t->line, v);
 }
+
+// var_decl_t parse_param(tokenizer_t t)
+// {
+//     eat_it(t, TOK_INT);
+    
+//     struct token tok = cur_tok(t);
+//     char *v = (char *)malloc(sizeof(char) * strlen(tok.name));
+//     strcpy(v, tok.name);
+
+//     eat_it(t, TOK_ID);
+//     return mk_var_decl(t->filename, t->line, v);
+// }
+

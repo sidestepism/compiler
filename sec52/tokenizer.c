@@ -32,6 +32,7 @@ tokenizer_t tokenize(tokenizer_t t){
   }
 
   clear_charbuf(t->token_buf);
+  clear_charbuf(t->line_buf);
 
 
   if (!isdigit(c)){ //数字じゃない時
@@ -139,7 +140,7 @@ tokenizer_t tokenize(tokenizer_t t){
             t->tok.kind = TOK_WHILE;
           }else{
             t->tok.kind = TOK_ID;
-            strcpy(t->tok.name, name);       
+            t->tok.name = get_body_charbuf(t->token_buf);
           }
         }else{
           printf("%d\n", c);
