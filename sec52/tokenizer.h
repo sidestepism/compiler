@@ -1,11 +1,11 @@
 // tokenizer.h
 #pragma once
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "char_buf.h"
 
 
 typedef enum{
@@ -38,12 +38,14 @@ typedef enum{
   TOK_SEMICOLON,
   TOK_ASSIGN,
   TOK_COMMA,
+  TOK_ANY // なんでもマッチする
 } token_kind_t;
 
 typedef struct token{
   token_kind_t kind;
   int ival;
   char name[1024];
+  char_buf_t* literal;
 } token;
 
 typedef struct tokenizer{
@@ -53,7 +55,10 @@ typedef struct tokenizer{
   int line;
   int num;
   char* filename;
+  char_buf_t* line_buf;
+  char_buf_t* token_buf;
 } *tokenizer_t;
+
 
 void syntax_error(tokenizer_t t, char *msg);
 tokenizer_t tokenize(tokenizer_t t);
@@ -63,3 +68,4 @@ token next_tok(tokenizer_t t);
 void output_token(tokenizer_t t);
 void output_token_kind(token_kind_t kind);
 int next_char(tokenizer_t t);
+void line_break(tokenizer_t);

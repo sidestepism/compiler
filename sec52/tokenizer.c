@@ -3,40 +3,18 @@
 #define case_x(k) case k: printf("%d:%s\n", t->line, #k); break
 #define case_kx(k) case k: printf("%s\n", #k); break
 
-void syntax_error(tokenizer_t t, char *msg){
-  int c = t->c;
-  FILE *fp = t->fp;
-  int num = t->num;
-  while(c != '\n'){
-    c = next_char(t);
-  }
-  printf("syntax error :%d:%d %s\n--------------", t->line, num, msg);
 
-  fseek(fp, 0, SEEK_SET);
-
-  int l = t->line -1;
-  while(l --){
-    while((c = fgetc(fp)) != '\n' && c != EOF){
-
-    }
-  }
-  // 前の行まで seek した
-
-  do{
-    printf("%c", c);
-  }while((c = fgetc(fp)) != '\n' && c != EOF);
-  printf("\n");
-
-  int i;
-  for(i = 0; i < num - 2; i++){printf(" ");}
-  printf("^\n");
-  exit(1);
-}
-
-
-int next_char(tokenizer_t t){
-  t->num ++;
-  return fgetc(t->fp);
+tokenizer_t mk_tokenizer(char *filename){
+  tokenizer_t t = (tokenizer_t)malloc(sizeof(struct tokenizer));
+  FILE *fp = fopen(filename, "rb");
+  if(fp == NULL){printf("can't open file\n");exit(1);}
+  t->line_buf = mk_char_buf();
+  t->token_buf = mk_char_buf();
+  t->fp = fp;
+  t->c = next_char(t);
+  t->line = 1;
+  t->num = 0;
+  return tokenize(t);
 }
 
 tokenizer_t tokenize(tokenizer_t t){
@@ -46,13 +24,15 @@ tokenizer_t tokenize(tokenizer_t t){
   while (c == ' ' || c == '\n' || c == '\t'){ // 連続する改行とスペースを飛ばす
     if(c == '\n'){
       // 改行の場合
-      t->line++;
-      t->num = 0;
+      line_break(t);
     }else{
       // 空白の場合
     }
     c = next_char(t);
   }
+
+  clear_charbuf(t->token_buf);
+
 
   if (!isdigit(c)){ //数字じゃない時
     t->c = next_char(t);
@@ -128,21 +108,21 @@ tokenizer_t tokenize(tokenizer_t t){
       default:
         // ID
         ;
+        push_charbuf(t->token_buf, c);
         char name[65536] = {};
         int i = 1;
         if(c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')){
           name[0] = c;
           while(t->c == '_' || (t->c >= 'a' && t->c <= 'z') || (t->c >= 'A' && t->c <= 'Z') || (t->c >= '0' && t->c <= '9')){
             if(i == 65535){
-              // too long id (length must be <= 50)
+              // too long id (length must be <= 65535)
               syntax_error(t, "too long id");
             }
             name[i++] = t->c;
             t->c = next_char(t);
-            // printf("eaten(%c)\n", t->c);
           }
 
-          // 予約後
+          // 予約語
           if(strcmp("break", name) == 0){
             t->tok.kind = TOK_BREAK;
           }else if(strcmp("continue", name) == 0){
@@ -159,7 +139,7 @@ tokenizer_t tokenize(tokenizer_t t){
             t->tok.kind = TOK_WHILE;
           }else{
             t->tok.kind = TOK_ID;
-            strcpy(t->tok.name, name);            
+            strcpy(t->tok.name, name);       
           }
         }else{
           printf("%d\n", c);
@@ -186,15 +166,21 @@ tokenizer_t tokenize(tokenizer_t t){
   return t; 
 }
 
-tokenizer_t mk_tokenizer(char *filename){
-  tokenizer_t t = (tokenizer_t)malloc(sizeof(struct tokenizer));
-  FILE *fp = fopen(filename, "rb");
-  if(fp == NULL){printf("can't open file\n");exit(1);}
-  t->fp = fp;
-  t->c = next_char(t);
-  t->line = 1;
+
+int next_char(tokenizer_t t){
+  push_charbuf(t->line_buf, (char)t->c);
+  push_charbuf(t->token_buf, (char)t->c);
+
+  t->num ++;
+  int c = fgetc(t->fp);
+  return c;
+}
+
+void line_break(tokenizer_t t){
+  t->line ++;
   t->num = 0;
-  return tokenize(t);
+  free_charbuf(t->line_buf);
+  t->line_buf = mk_char_buf();
 }
 
 token cur_tok(tokenizer_t t){
@@ -264,6 +250,36 @@ void output_token(tokenizer_t t){
   }
 }
 
+void syntax_error(tokenizer_t t, char *msg){
+  int c = t->c;
+  FILE *fp = t->fp;
+  int num = t->num;
+  while(c != '\n'){
+    c = next_char(t);
+  }
+
+  printf("syntax error :%d:%d %s\n--------------", t->line, num, msg);
+
+  fseek(fp, 0, SEEK_SET);
+
+  int l = t->line - 1;
+  while(l --){
+    while((c = fgetc(fp)) != '\n' && c != EOF){
+
+    }
+  }
+  // 前の行まで seek した
+
+  do{
+    printf("%c", c);
+  }while((c = fgetc(fp)) != '\n' && c != EOF);
+  printf("\n");
+
+  int i;
+  for(i = 0; i < num - 2; i++){printf(" ");}
+  printf("^\n");
+  exit(1);
+}
 
 void output_token_kind(token_kind_t kind){
     switch(kind){
