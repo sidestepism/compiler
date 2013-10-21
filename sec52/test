@@ -1,14 +1,15 @@
-while ( 1 ) {
-    if(1) continue;
-    continue;
-    break;
-}
+int main(int argv, int argc){
+    while ( 1 ) {
+        if(1) continue;
+        continue;
+        break;
+    }
 
-if(1){
-  ;
-  ;
-  ;
-  return 1;
+    if(1){
+      ;
+      ;
+      ;
+      return 1;
+    }
 }
-
 
