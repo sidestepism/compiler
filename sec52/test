@@ -1,9 +1,15 @@
+int main(int argv, int argc){
+    while ( 1 ) {
+        if(1) continue;
+        continue;
+        break;
+    }
 
-if(!3 + 1 * 7){
-  f = 2 * 3 * 5;
-  ;
-  ;
-  return f();
+    if(1){
+      ;
+      ;
+      ;
+      return 1;
+    }
 }
-
 
