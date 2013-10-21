@@ -35,6 +35,7 @@ expr_t mk_expr_int_literal(char * filename, int line,
 {
   expr_t e = alloc_expr(filename, line, expr_kind_int_literal);
   e->u.s = i;
+  printf("u.s: %s\n", i);
   return e;
 }
 
@@ -482,6 +483,7 @@ void pr_stmt(FILE * fp, stmt_t s)
     pr_stmt(fp, s->u.w.body);
     break;
   default:
+    printf("error: stmt_kind: %d\n", s->kind);
     assert(0);
   }
 }

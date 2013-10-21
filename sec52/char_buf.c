@@ -35,6 +35,7 @@ void push_charbuf (char_buf_t* buf, char c)
 			printf("error: failed to realloc memory for char_buf->body\n");
 			exit(1);
 		}
+		buf->maxlength *= 2;
 	}
 	buf->body[buf->length ++] = c;
 }
@@ -52,8 +53,8 @@ char* get_body_charbuf (char_buf_t* buf)
  */
 char* get_copy_charbuf (char_buf_t* buf)
 {
-	char* ary = (char*) malloc(buf->length * sizeof(char*) + 1);
-	memcpy(ary, buf->body, buf->length + 1);
+	char* ary = (char*) malloc(buf->length * sizeof(char*));
+	memcpy(ary, buf->body, buf->length);
 	return ary;
 }
 

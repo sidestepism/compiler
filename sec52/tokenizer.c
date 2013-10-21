@@ -31,10 +31,6 @@ tokenizer_t tokenize(tokenizer_t t){
     c = next_char(t);
   }
 
-  clear_charbuf(t->token_buf);
-  clear_charbuf(t->line_buf);
-
-
   if (!isdigit(c)){ //数字じゃない時
     t->c = next_char(t);
     switch (c){
@@ -109,19 +105,14 @@ tokenizer_t tokenize(tokenizer_t t){
       default:
         // ID
         ;
-        push_charbuf(t->token_buf, c);
-        char name[65536] = {};
-        int i = 1;
+        char_buf_t* name_buf = mk_char_buf();
         if(c == '_' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')){
-          name[0] = c;
+          push_charbuf(name_buf, c);
           while(t->c == '_' || (t->c >= 'a' && t->c <= 'z') || (t->c >= 'A' && t->c <= 'Z') || (t->c >= '0' && t->c <= '9')){
-            if(i == 65535){
-              // too long id (length must be <= 65535)
-              syntax_error(t, "too long id");
-            }
-            name[i++] = t->c;
+            push_charbuf(name_buf, t->c);
             t->c = next_char(t);
           }
+          char* name = get_body_charbuf(name_buf);
 
           // 予約語
           if(strcmp("break", name) == 0){
@@ -140,7 +131,7 @@ tokenizer_t tokenize(tokenizer_t t){
             t->tok.kind = TOK_WHILE;
           }else{
             t->tok.kind = TOK_ID;
-            t->tok.name = get_body_charbuf(t->token_buf);
+            t->tok.name = name;
           }
         }else{
           printf("%d\n", c);

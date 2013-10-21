@@ -45,6 +45,7 @@ typedef struct token{
   token_kind_t kind;
   int ival;
   char* name;
+  char* sval;
   char_buf_t* literal;
 } token;
 

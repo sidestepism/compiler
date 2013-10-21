@@ -162,16 +162,21 @@ expr_t parse_mult_expr(tokenizer_t t){
 }
 
 expr_t parse_intlit_expr(tokenizer_t t){
+    sprintf(cur_tok(t).name, "%d", cur_tok(t).ival);
+
+
     eat_it(t, TOK_INT_LITERAL);
-    return mk_expr_int_literal(t->filename, t->line, "int");
+    return mk_expr_int_literal(t->filename, t->line, cur_tok(t).name);
 }
 
 expr_t parse_id_expr(tokenizer_t t){
-  eat_it(t, TOK_ID);
-  struct token tok = cur_tok(t);
-  char *name = tok.name;
 
-  if(tok.kind == TOK_LPAREN)
+  char* name = (char *) malloc(sizeof(char) * strlen(cur_tok(t).name));
+  strcpy(name, cur_tok(t).name);
+
+  eat_it(t, TOK_ID);
+
+  if(cur_tok(t).kind == TOK_LPAREN)
   { // 関数呼び出し
     eat_it(t, TOK_LPAREN);    
     expr_list_t list = parse_arg_expr(t);
@@ -279,20 +284,24 @@ stmt_t parse_stmt_compound(tokenizer_t t){
     var_decl_list_t decls = mk_var_decl_list();
 
     eat_it(t, TOK_LBRACE);
+    // printf("var_decl_list_add begin\n");
 
-    while(1){
-        // 型宣言じゃなかったら修了
-        if(cur_tok(t).kind != TOK_INT){
-            break;
-        }else{
-            var_decl_list_add(decls, parse_decl(t));
-        }
-    }
-
+    // while(1){
+    //     // 型宣言じゃなかったら修了
+    //     if(cur_tok(t).kind != TOK_INT){
+    //         break;
+    //     }else{
+    //         printf("var_decl_list_add\n");
+    //         var_decl_list_add(decls, parse_decl(t));
+    //     }
+    // }
 
     while(1){
         if(cur_tok(t).kind != TOK_RBRACE){
-            stmt_list_add(list, parse_stmt(t));
+            printf("stmt_list_add\n");
+            stmt_t s = parse_stmt(t);
+            stmt_list_add(list, s);
+            printf("s->kind: %d\n", s->kind);
         }else{
             // } でリスト終了
             break;
@@ -330,13 +339,15 @@ stmt_t parse_stmt_if(tokenizer_t t)
     eat_it(t, TOK_RPAREN);
     stmt_t body = parse_stmt(t);
 
-    stmt_t else_body;
+    stmt_t else_body = NULL;
     if(cur_tok(t).kind == TOK_ELSE){
         eat_it(t, TOK_ELSE);
+        else_body = mk_stmt_empty(t->filename, t->line);
         else_body = parse_stmt(t);
     }else{
         // else はまだ空文
         else_body = mk_stmt_empty(t->filename, t->line);
+        else_body = parse_stmt(t);
     }
 
     return mk_stmt_if(t->filename, t->line, e, body, else_body);
@@ -424,7 +435,7 @@ var_decl_t parse_decl(tokenizer_t t)
     eat_it(t, TOK_INT);
     
     struct token tok = cur_tok(t);
-    char *v = (char *)malloc(sizeof(char) * strlen(tok.name));
+    char *v = (char *) malloc (sizeof(char) * strlen(tok.name));
     strcpy(v, tok.name);
 
     eat_it(t, TOK_ID);
