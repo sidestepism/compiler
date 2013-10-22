@@ -163,7 +163,7 @@ expr_t parse_mult_expr(tokenizer_t t){
 expr_t parse_intlit_expr(tokenizer_t t){
     sprintf(cur_tok(t).name, "%d", cur_tok(t).ival);
     char* v = strdup(cur_tok(t).name);
-    printf("name: %s\n", cur_tok(t).name);
+    // printf("name: %s\n", cur_tok(t).name);
 
     eat_it(t, TOK_INT_LITERAL);
     return mk_expr_int_literal(t->filename, t->line, v);
@@ -172,7 +172,7 @@ expr_t parse_intlit_expr(tokenizer_t t){
 expr_t parse_id_expr(tokenizer_t t){
   char* v = strdup(cur_tok(t).name);
   eat_it(t, TOK_ID);
-  printf("parse_id_expr: %s\n", v);
+  // printf("parse_id_expr: %s\n", v);
 
   if(cur_tok(t).kind == TOK_LPAREN)
   { // 関数呼び出し
@@ -308,24 +308,24 @@ stmt_t parse_stmt_compound(tokenizer_t t){
 
     eat_it(t, TOK_LBRACE);
     // printf("var_decl_list_add begin\n");
-    printf("call: parse_stmt_compound\n");
+    // printf("call: parse_stmt_compound\n");
 
     while(1){
         // 型宣言じゃなかったら修了
         if(cur_tok(t).kind != TOK_INT){
             break;
         }else{
-            printf("var_decl_list_add\n");
+            // printf("var_decl_list_add\n");
             var_decl_list_add(decls, parse_decl(t));
         }
     }
 
     while(1){
         if(cur_tok(t).kind != TOK_RBRACE){
-            printf("stmt_list_add\n");
+            // printf("stmt_list_add\n");
             stmt_t s = parse_stmt(t);
             stmt_list_add(list, s);
-            printf("s->kind: %d\n", s->kind);
+            // printf("s->kind: %d\n", s->kind);
         }else{
             // } でリスト終了
             break;

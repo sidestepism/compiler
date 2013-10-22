@@ -35,7 +35,7 @@ expr_t mk_expr_int_literal(char * filename, int line,
 {
   expr_t e = alloc_expr(filename, line, expr_kind_int_literal);
   e->u.s = i;
-  printf("u.s: %s\n", i);
+  // printf("u.s: %s\n", i);
   return e;
 }
 

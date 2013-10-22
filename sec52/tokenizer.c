@@ -135,7 +135,7 @@ tokenizer_t tokenize(tokenizer_t t){
             t->tok.name = name;
           }
         }else{
-          printf("%d\n", c);
+          // printf("%d\n", c);
           syntax_error(t, "invalid symbol");
         }
         break;
@@ -199,13 +199,16 @@ token next_tok(tokenizer_t t){
 // }
 
 void output_token(tokenizer_t t){
+  // NO OUTPUT
+  return;
+
   if(t == NULL){
-    printf("t == NULL\n");
+    // printf("t == NULL\n");
   }
   if(t->tok.kind == TOK_ID){
-    printf("%d:TOK_ID (%s)\n", t->line, t->tok.name);
+    // printf("%d:TOK_ID (%s)\n", t->line, t->tok.name);
   }else if(t->tok.kind == TOK_INT_LITERAL){
-    printf("%d:TOK_INT_LITERAL (%d)\n", t->line, t->tok.ival);
+    // printf("%d:TOK_INT_LITERAL (%d)\n", t->line, t->tok.ival);
   }else{
     // switch
     // #define case_x(k) case k: printf("%s\n", #k); break
