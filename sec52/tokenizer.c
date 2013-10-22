@@ -19,6 +19,7 @@ tokenizer_t mk_tokenizer(char *filename){
 
 tokenizer_t tokenize(tokenizer_t t){
   int c = t->c;
+
   if (t->num > 65535) syntax_error(t, "too long");
 
   while (c == ' ' || c == '\n' || c == '\t'){ // 連続する改行とスペースを飛ばす
@@ -246,7 +247,8 @@ void syntax_error(tokenizer_t t, char *msg){
   int c = t->c;
   FILE *fp = t->fp;
   int num = t->num;
-  while(c != '\n'){
+
+  while(c != '\n' && c != EOF){
     c = next_char(t);
   }
 

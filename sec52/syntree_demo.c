@@ -23,11 +23,21 @@ int main(int argc, char ** argv)
   // clear_charbuf(buf1);
   // free_charbuf(buf1);
 
+  FILE* out;
+  if(argc == 1){
+    printf("usage: %s [input file] (output file)\n", argv[0]);
+    // usage
+  }else if(argc == 2){
+    out = stdout;
+  }else if(argc == 3){
+    out = fopen(argv[2], "wb");
+  }
+
   tokenizer_t t = mk_tokenizer(argv[1]);
   program_t W;
   W = parse_program(t);
 
-  pr_program(stdout, W);
+  pr_program(out, W);
 
   // /* while (x < y) { S } */
   // stmt_t W = mk_stmt_while(f, l, 
