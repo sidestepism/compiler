@@ -406,7 +406,7 @@ fun_def_t parse_fun_def(tokenizer_t t)
         if(cur_tok(t).kind == TOK_RPAREN){
             break;
         }else{
-            var_decl_list_add(params, parse_decl(t));
+            var_decl_list_add(params, parse_param(t));
             if(cur_tok(t).kind == TOK_COMMA){
                 eat_it(t, TOK_COMMA);
                 continue;
@@ -421,15 +421,6 @@ fun_def_t parse_fun_def(tokenizer_t t)
     return mk_fun_def(t->filename, t->line, f, params, body);
 }
 
-/*
-program_t parse_program(tokenizer_t t)
-{
-    fun_def_list_t list = mk_fun_def_list();
-    
-}
-*/
-
-
 var_decl_t parse_decl(tokenizer_t t)
 {
     eat_it(t, TOK_INT);
@@ -443,15 +434,24 @@ var_decl_t parse_decl(tokenizer_t t)
     return mk_var_decl(t->filename, t->line, v);
 }
 
-// var_decl_t parse_param(tokenizer_t t)
-// {
-//     eat_it(t, TOK_INT);
+var_decl_t parse_param(tokenizer_t t)
+{
+    eat_it(t, TOK_INT);
     
-//     struct token tok = cur_tok(t);
-//     char *v = (char *)malloc(sizeof(char) * strlen(tok.name));
-//     strcpy(v, tok.name);
+    struct token tok = cur_tok(t);
+    char *v = (char *) malloc (sizeof(char) * strlen(tok.name));
+    strcpy(v, tok.name);
 
-//     eat_it(t, TOK_ID);
-//     return mk_var_decl(t->filename, t->line, v);
-// }
+    eat_it(t, TOK_ID);
+    return mk_var_decl(t->filename, t->line, v);
+}
 
+program_t parse_program(tokenizer_t t)
+{
+    fun_def_list_t list = mk_fun_def_list();
+    while(1){
+      if(cur_tok(t).kind == TOK_EOF) break;
+      else fun_def_list_add(list, parse_fun_def(t));
+    }
+    return mk_program(t->filename, list);
+}

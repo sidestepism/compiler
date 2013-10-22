@@ -24,13 +24,10 @@ int main(int argc, char ** argv)
   // free_charbuf(buf1);
 
   tokenizer_t t = mk_tokenizer(argv[1]);
-  fun_def_t W;
+  program_t W;
+  W = parse_program(t);
 
-  while(cur_tok(t).kind != TOK_EOF){
-    W = parse_fun_def(t);
-  }
-
-  pr_fun_def(stdout, W);
+  pr_program(stdout, W);
 
   // /* while (x < y) { S } */
   // stmt_t W = mk_stmt_while(f, l, 
