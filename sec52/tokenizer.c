@@ -19,6 +19,7 @@ tokenizer_t mk_tokenizer(char *filename){
 
 tokenizer_t tokenize(tokenizer_t t){
   int c = t->c;
+
   if (t->num > 65535) syntax_error(t, "too long");
 
   while (c == ' ' || c == '\n' || c == '\t'){ // 連続する改行とスペースを飛ばす
@@ -134,7 +135,7 @@ tokenizer_t tokenize(tokenizer_t t){
             t->tok.name = name;
           }
         }else{
-          printf("%d\n", c);
+          // printf("%d\n", c);
           syntax_error(t, "invalid symbol");
         }
         break;
@@ -198,13 +199,16 @@ token next_tok(tokenizer_t t){
 // }
 
 void output_token(tokenizer_t t){
+  // NO OUTPUT
+  return;
+
   if(t == NULL){
-    printf("t == NULL\n");
+    // printf("t == NULL\n");
   }
   if(t->tok.kind == TOK_ID){
-    printf("%d:TOK_ID (%s)\n", t->line, t->tok.name);
+    // printf("%d:TOK_ID (%s)\n", t->line, t->tok.name);
   }else if(t->tok.kind == TOK_INT_LITERAL){
-    printf("%d:TOK_INT_LITERAL (%d)\n", t->line, t->tok.ival);
+    // printf("%d:TOK_INT_LITERAL (%d)\n", t->line, t->tok.ival);
   }else{
     // switch
     // #define case_x(k) case k: printf("%s\n", #k); break
@@ -246,7 +250,8 @@ void syntax_error(tokenizer_t t, char *msg){
   int c = t->c;
   FILE *fp = t->fp;
   int num = t->num;
-  while(c != '\n'){
+
+  while(c != '\n' && c != EOF){
     c = next_char(t);
   }
 
