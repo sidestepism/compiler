@@ -1,6 +1,6 @@
 CC := cc
 CFLAGS := -Wall -g
-SYNTREE_OBJS := util.o list.o tokenizer.o syntree.o char_buf.o parse.o
+SYNTREE_OBJS := util.o list.o tokenizer.o syntree.o char_buf.o parse.o env.o
 
 all: syntree_demo
 

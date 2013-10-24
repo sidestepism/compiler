@@ -11,6 +11,9 @@
  * -----------------------------------
  */
 
+typedef struct env * env_t;
+
+
 /* 式を表すデータ型 expr_t.
 
    以下は, expr_tは(のちに定義される)
@@ -60,6 +63,7 @@ struct expr
   int line;			/* 出現行番号 */
   expr_kind_t kind;		/* 種類 */
   syntree_info_t info;
+  env_t env;
   /* u : 各種類に応じて必要な情報 */
   union {
     /* 整数リテラル(expr_kind_int_literal)
@@ -190,6 +194,7 @@ typedef struct fun_def
   char * f;			/* 定義される関数名 (f) */
   var_decl_list_t params;	/* 引数リスト (int x, int y, int z) */
   stmt_t body;			/* 本体 (S). 実際は必ず複合文 */
+  env_t env;
 } * fun_def_t;
 
 /* 関数定義のリスト */

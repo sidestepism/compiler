@@ -7,6 +7,7 @@
 #include "util.h"
 #include "list.h"
 #include "syntree.h"
+#include "env.h"
 
 
 /* 
@@ -25,6 +26,8 @@ static expr_t alloc_expr(char * filename, int line, expr_kind_t kind)
   e->filename = filename;
   e->line = line;
   e->kind = kind;
+  e->env = mk_env();
+  e->env->expr = e;
   e->info = NULL;
   return e;
 }
@@ -441,6 +444,7 @@ void pr_stmt_list(FILE * fp, stmt_list_t ss)
 /* 文を表示 */
 void pr_stmt(FILE * fp, stmt_t s)
 {
+
   switch (s->kind) {
   case stmt_kind_empty:
     fprintf(fp, ";\n");
@@ -485,6 +489,12 @@ void pr_stmt(FILE * fp, stmt_t s)
   default:
     printf("error: stmt_kind: %d\n", s->kind);
     assert(0);
+  }
+
+  if(s->info != NULL){
+    printf("(%d)\n", s->info->offset);
+  }else{
+    printf("(NULL)\n");
   }
 }
 
