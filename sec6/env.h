@@ -46,6 +46,7 @@ typedef struct env {
     syntree_info_list_t info_list;
     int decl_ptr;
     int param_ptr;
+    expr_t expr;
 } env;
 
 typedef struct syntree_info {
