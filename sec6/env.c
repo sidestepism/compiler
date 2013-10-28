@@ -2,12 +2,16 @@
 #include "env.h"
 #include "list.h"
 
+#include "util.h"
+#include "list.h"
+
+
 /**
  * env 型を作ってポインタを返す
  */ 
 env_t mk_env(env_t parent)
 {
-	env_t env = (env_t) malloc(sizeof(env_t));
+	env_t env = (env_t) safe_malloc(sizeof(env_t));
 	if(env == NULL){
 		printf("error: failed to alloc memory for env\n");
 		exit(1);
@@ -29,6 +33,7 @@ env_t scan_syntree_program(program_t prog)
 {
 	printf("call: scan_syntree_program\n");
 	env_t global_env = mk_env(NULL);
+    global_env->info_list = mk_syntree_info_list();
 
 	int n = fun_def_list_sz(prog->fun_defs);
 	int i;
@@ -46,7 +51,9 @@ env_t scan_syntree_fun_def(fun_def_t fun_def, env_t env_global)
 {
 	printf("call: scan_syntree_fun_def\n");
 	env_t env = mk_env(env_global);
-	
+    env->info_list = mk_syntree_info_list();
+
+
 	// 自分の持っている次に置く仮置きメモリのポインタの値 (ebp からのオフセット)
 	env->decl_ptr = -4;
 	env->param_ptr = 8;
@@ -111,9 +118,10 @@ env_t scan_syntree_stmt(stmt_t s, env_t p_env)
 		// 条件式
 		// ブロックなので env を作る。親はp_env
 		env_t env = mk_env(p_env);
+        env->info_list = mk_syntree_info_list();
 
 		// 宣言文をを処理する
-		scan_syntree_decls(s->u.c.decls, p_env);
+		scan_syntree_decls(s->u.c.decls, env);
 
 		// 文のリストを処理する
 		int n = stmt_list_sz(s->u.c.body);
@@ -161,7 +169,11 @@ env_t scan_syntree_expr(expr_t e, env_t env)
 			e->info = mk_syntree_info_imm(env, atoi(e->u.s));
 		break;
 		case expr_kind_id:
-			e->info = mk_syntree_info_id(env, e->u.s);
+			e->info = search_syntree_info_id(env, e->u.s);
+            if(e->info == NULL){
+                printf("[error] id %s not defined¥n", e->u.s);
+                exit(1);
+            }
 		break;
 		case expr_kind_paren:
 			// ただのカッコ
@@ -169,7 +181,7 @@ env_t scan_syntree_expr(expr_t e, env_t env)
 		break;
 		case expr_kind_app:
 			;
-			syntree_info_t v = env_add_syntree_info(env, NULL, var_kind_memory, reg_ebp, env->decl_ptr);
+			syntree_info_t v = env_add_syntree_info(env, "partial", var_kind_memory, reg_ebp, env->decl_ptr);
 			// この結果を置いておくところを確保 (decl_ptr)
 			e->info = v;
 			env->decl_ptr -= 4;
@@ -215,11 +227,13 @@ int syntree_info_list_sz(syntree_info_list_t l)
  */
 syntree_info_t mk_syntree_info()
 {
-	syntree_info_t info = (syntree_info_t) malloc(sizeof(syntree_info_t));
+	syntree_info_t info = (syntree_info_t) safe_malloc(sizeof(syntree_info_t) + 32);
+
 	if(info == NULL){
 		printf("error: failed to alloc memory for syntree_info\n");
 		exit(1);
 	}
+
 	return info;
 }
 
@@ -233,6 +247,7 @@ syntree_info_t env_add_syntree_info(env_t env, char* name, var_kind_t kind, reg_
 	info->reg = reg;
 	info->offset = offset;
 	syntree_info_list_add(env->info_list, info);
+//    pr_syntree_info_table(env->info_list);
 	return info;
 }
 
@@ -241,10 +256,11 @@ syntree_info_t mk_syntree_info_imm(env_t env, int val){
 	info->name = NULL;
 	info->kind = var_kind_imm;
 	info->val = val;
+    info->offset = 0;
 	return info;
 }
-syntree_info_t mk_syntree_info_id(env_t env, char* name){
-	printf("call: mk_syntree_info_id (name: %s)\n", name);
+syntree_info_t search_syntree_info_id(env_t env, char* name){
+	printf("call: search_syntree_info_id (name: %s)\n", name);
 
 	// id でサーチして結果を返す
 	int i = 0; 
@@ -255,15 +271,28 @@ syntree_info_t mk_syntree_info_id(env_t env, char* name){
 		syntree_info_t si = syntree_info_list_get(env->info_list, i);
 		if (si->name == NULL) continue;
 		if (strcmp(si->name, name) == 0){
-			printf("[found]: mk_syntree_info_id (name: %s, offset: %d)\n", name, si->offset);
+			printf("[found]: search_syntree_info_id (name: %s/%s, offset: %d)\n", si->name, name, si->offset);
 			return si;
 		}
 	}
 
 	if(env->parent == NULL){
-		printf("[not found]: mk_syntree_info_id (name: %s)\n", name);
+		printf("[not found]: search_syntree_info_id (name: %s)\n", name);
 		return NULL;
-	}else return mk_syntree_info_id(env->parent, name);
+	}else return search_syntree_info_id(env->parent, name);
+}
+
+void pr_syntree_info_table(syntree_info_list_t l)
+{
+	printf("call: pr_syntree_info_table\n");
+	int n = syntree_info_list_sz(l);
+    int i;
+
+	for (i = 0; i < n; i++) {
+        syntree_info_t info = syntree_info_list_get(l, i);
+        printf("name: %s, offset: %d\n", info->name, info->offset);
+
+    }
 }
 
 /**
