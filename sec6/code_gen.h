@@ -4,8 +4,8 @@
 
 typedef struct oprd_list *oprd_list_t;
 typedef struct operand *oprd_t;
-typedef struct env * env_t;
-typedef struct operand * oprd_t;
+// typedef struct env * env_t;
+// typedef struct operand * oprd_t;
 
 typedef enum{
   litr,
@@ -34,7 +34,9 @@ typedef struct inst{
   oprd_t right;
 } *ins_t;
 
-void pr_ind(ins_t i);
+
+void pr_ins(ins_t i);
+// void pr_ind(ins_t i);
 oprd_t cogen_expr(FILE *fp, expr_t e, env_t env);
 int cogen_decl(FILE *fp, expr_t e, env_t env);
 oprd_t cogen_expr_int_literal(FILE* fp, expr_t e, env_t env);

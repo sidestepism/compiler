@@ -82,10 +82,10 @@ oprd_t cogen_expr_app(FILE *fp, expr_t e, env_t env){
   oprd_t ret;
   switch(e->u.a.o){
     case op_kind_none:
-      return;
+      return NULL;
     case op_kind_fun:/* 組み込み演算子ではない, 関数 */
       printf("call %s", e->u.a.f);
-      return; //@TODO eaxのoprdを返す
+      return NULL; //@TODO eaxのoprdを返す
     case op_kind_assign:/* a = b 2項だから命令とvar返す */
       ins.kind = op_kind_assign;
       ins.left = cogen_expr(fp, expr_list_get(e->u.a.args, 0), env); //left
@@ -102,7 +102,7 @@ oprd_t cogen_expr_app(FILE *fp, expr_t e, env_t env){
       ins.left = cogen_expr(fp, expr_list_get(e->u.a.args, 0), env);
       ins.right = cogen_expr(fp, expr_list_get(e->u.a.args, 1), env);
       pr_ins(&ins);
-      return;
+      return NULL; //@TODO
     case op_kind_bin_plus:
     case op_kind_bin_minus:
     case op_kind_mult:
@@ -142,7 +142,7 @@ oprd_t cogen_expr_app(FILE *fp, expr_t e, env_t env){
       ret = cogen_expr(fp, expr_list_get(e->u.a.args, 0), env);
       printf("cmpl $0 %s\n", ret->opr);
       printf("je\n");
-      return;
+      return NULL;
   }
 }
 

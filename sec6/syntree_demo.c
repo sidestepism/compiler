@@ -8,7 +8,7 @@
 #include "syntree.h"
 #include "parse.h"
 #include "tokenizer.h"
-#include "env.h"
+#include "code_gen.h"
 
 int main(int argc, char ** argv)
 {
@@ -24,23 +24,41 @@ int main(int argc, char ** argv)
   // free_charbuf(buf1);
 
   FILE* out;
-  if(argc == 2){
+  if(argc == 1){
+    printf("usage: %s [input file] (output file)\n", argv[0]);
+    // usage
+  }else if(argc == 2){
     out = stdout;
   }else if(argc == 3){
     out = fopen(argv[2], "wb");
-  }else{
-    printf("usage: %s [input file] (output file)\n", argv[0]);
-    return 0;
-    // usage
   }
 
+  struct env e;
+  env_t ep = &e;
+  oprd_list_t local = mk_oprd_list();
+  struct operand o;
+  strcpy(o.name, "x");
+  o.reg = 8;
+  o.opr = strdup("8");
+  oprd_t op = &o;
+  o.prev = NULL;
+  oprd_list_add(local, op);
+  //e.scope_limit = op;
+  e.local_last = op;
+  e.global_last = op;
+  
   tokenizer_t t = mk_tokenizer(argv[1]);
-  program_t W;
-  W = parse_program(t);
+  expr_t W,x;
+  W = parse_expr(t);
+  pr_expr(out, W);
+  printf("\n");  
+  printf("%d", W->kind);
+  x = expr_list_get(W->u.a.args, 0);
+  printf("%d", x->kind);
+  pr_expr(out, x);
+  printf("\n");
 
-  scan_syntree_program(W);
-
-  pr_program(out, W);
+  cogen_expr(out, W, ep); 
 
   // /* while (x < y) { S } */
   // stmt_t W = mk_stmt_while(f, l, 

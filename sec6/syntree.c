@@ -26,7 +26,7 @@ static expr_t alloc_expr(char * filename, int line, expr_kind_t kind)
   e->filename = filename;
   e->line = line;
   e->kind = kind;
-  e->env = mk_env();
+  // e->env = mk_env();
   // e->env->expr = e;
   e->info = NULL;
   return e;
