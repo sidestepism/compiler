@@ -68,5 +68,6 @@ void free_env (env_t* buf);
 
 syntree_info_t env_add_syntree_info(env_t env, char* name, var_kind_t kind, reg_t reg, int offset);
 syntree_info_t mk_syntree_info_imm(env_t env, int val);
-syntree_info_t mk_syntree_info_id(env_t env, char* name);
+syntree_info_t search_syntree_info_id(env_t env, char* name);
 
+void pr_syntree_info_table(syntree_info_list_t l);
