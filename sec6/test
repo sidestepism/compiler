@@ -1,8 +1,13 @@
-int f(int a, int b, int c, int d){
-    int x;
-    int y;
-    int z;
 
-    x = 0;
-    return x + 1;
-}
+x = 3 + x * 5;
+   
+  f(1,2,3);
+
+  ib = 0;
+  c = 0;
+  while(i < 100)
+    {
+      if(i % 4 == 0);
+      else;
+    }
+  return c;
