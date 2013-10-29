@@ -42,7 +42,7 @@ int main(int argc, char ** argv)
 
   scan_syntree_program(W);
 
-  pr_program(stdout, W);
+  // pr_program(stdout, W);
 
   cogen_program(out, W);
 

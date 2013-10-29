@@ -99,29 +99,13 @@ expr_t parse_add_expr(tokenizer_t t){
     struct token tok = cur_tok(t);
     while(tok.kind == TOK_PLUS || tok.kind == TOK_MINUS){
         eat_it(t, TOK_ANY); // なんでも食べる
-        expr_right = parse_expr(t);
+        expr_right = parse_mult_expr(t); 
         expr_left = mk_expr_bin_op(t->filename, t->line, 
           (tok.kind == TOK_PLUS) ? op_kind_bin_plus : op_kind_bin_minus   // +, - のどちらかしかない
           , expr_left, expr_right);  // left にたたんでいく
         tok = cur_tok(t);
     }
-
   return expr_left;
-
-  // struct token tok = cur_tok(t);
-  // expr_list_t list = mk_expr_list(t);
-  // expr_list_add(list, parse_mult_expr(t));
-  // while(1)
-  // {
-  //   if(tok.kind == TOK_PLUS || TOK_MINUS)
-  //   {
-  //     tok.next;
-  //     expr_list_add(list, parse_mult_expr(t));
-  //   }
-  //   else break;
-  // }
-  // expr_t expr = ;
-  // return;
 }
 
 expr_t parse_mult_expr(tokenizer_t t){
@@ -145,19 +129,6 @@ expr_t parse_mult_expr(tokenizer_t t){
         tok = cur_tok(t);
     }
     return expr_left;  
-  // expr_list_t list = mk_expr_list(t);
-  // expr_list_add(list, parse_unary_expr(t));
-  // while(1)
-  // {
-  //   if(tok.kind == TOK_MUL || TOK_DIV || TOK_REM)
-  //   {
-  //     tok.next;
-  //     expr_list_add(list, parse_unary_expr(t));
-  //   }
-  //   else break
-  // }
-  // expr_t expr = ;
-  // return;
 }
 
 expr_t parse_intlit_expr(tokenizer_t t){

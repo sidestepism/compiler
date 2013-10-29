@@ -81,9 +81,82 @@ void cogen_stmt(FILE *fp, stmt_t s){
             // 式文
             // [todo] どこにも使われない式文は削除可能
             cogen_expr(fp, s->u.e);
+
+            // !important 
+            // if expr result is in %eflag
+            if(s->u.e->info->reg == reg_eflags){
+              char* true_label = get_label();
+              fprintf(fp, "movl $1, %%edx\n");
+              switch (s->u.e->u.a.o){
+                  // bool op -> its result is in %eflags
+                  case op_kind_eq:
+                      fprintf(fp, "je %s\n", true_label);
+                      break;
+                  case op_kind_neq:
+                      fprintf(fp, "jne %s\n", true_label);
+                      break;
+                  case op_kind_lt:
+                      fprintf(fp, "jl %s\n", true_label);
+                      break;
+                  case op_kind_gt:
+                      fprintf(fp, "jg %s\n", true_label);
+                      break;
+                  case op_kind_le:
+                      fprintf(fp, "jle %s\n", true_label);
+                      break;
+                  case op_kind_ge:
+                      fprintf(fp, "jge %s\n", true_label);
+                      break;
+                  default:
+                      fprintf(fp, "invalid expression");
+                      exit(1);
+                      break;
+              };
+              fprintf(fp, "movl $0, %%edx\n");
+              fprintf(fp, "%s: \n", true_label);
+              // result is saved in %edx
+              s->u.e->info->reg = reg_edx;
+            }
+
             break;
       case stmt_kind_return:
             cogen_expr(fp, s->u.e);
+            // !important 
+            // if expr result is in %eflag
+            if(s->u.e->info->reg == reg_eflags){
+              char* true_label = get_label();
+              fprintf(fp, "movl $1, %%edx\n");
+              switch (s->u.e->u.a.o){
+                  // bool op -> its result is in %eflags
+                  case op_kind_eq:
+                      fprintf(fp, "je %s\n", true_label);
+                      break;
+                  case op_kind_neq:
+                      fprintf(fp, "jne %s\n", true_label);
+                      break;
+                  case op_kind_lt:
+                      fprintf(fp, "jl %s\n", true_label);
+                      break;
+                  case op_kind_gt:
+                      fprintf(fp, "jg %s\n", true_label);
+                      break;
+                  case op_kind_le:
+                      fprintf(fp, "jle %s\n", true_label);
+                      break;
+                  case op_kind_ge:
+                      fprintf(fp, "jge %s\n", true_label);
+                      break;
+                  default:
+                      fprintf(fp, "invalid expression");
+                      exit(1);
+                      break;
+              };
+              fprintf(fp, "movl $0, %%edx\n");
+              fprintf(fp, "%s: \n", true_label);
+              // result is saved in %edx
+              s->u.e->info->reg = reg_edx;
+            }
+
             // 戻り値は eax
             // [todo] env でうまく処理して削除可能
             fprintf(fp, "movl %s, %%eax\n", cogen_addr(s->u.e->info));
@@ -142,11 +215,9 @@ void cogen_stmt(FILE *fp, stmt_t s){
                         fprintf(fp, "jge %s\n", then_label);
                         break;
                     default:
-                        fprintf(fp, "# [error:] op??\n");
-                        // cogen_mov_reg(fp, right, reg_eax);
-                        // cogen_mov_reg(fp, left, reg_ebx);
-                        // fprintf(fp, "cmpl %s %s\n",  cogen_addr(right->info), cogen_addr(left->info));
-                        exit(1);
+                        fprintf(fp, "movl %s,%%eax\n", cogen_addr(s->u.i.e->info));
+                        fprintf(fp, "cmpl $0,%%eax\n");
+                        fprintf(fp, "jne %s\n", then_label);
                         break;
                 };
             }else{
@@ -284,16 +355,16 @@ void cogen_expr_app(FILE *fp, expr_t e){
       break;
     case op_kind_bin_plus:
           // もっと効率化できるぞ      
-          cogen_expr(fp, right);
           cogen_expr(fp, left);
+          cogen_expr(fp, right);
           fprintf(fp, "# bin_plus \n");
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "addl %s,%%eax\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
           break;
     case op_kind_bin_minus:
-          cogen_expr(fp, right);
           cogen_expr(fp, left);
+          cogen_expr(fp, right);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "subl %s,%%eax\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
@@ -308,8 +379,10 @@ void cogen_expr_app(FILE *fp, expr_t e){
     case op_kind_div:
           cogen_expr(fp, right);
           cogen_expr(fp, left);
+          fprintf(fp, "movl $0,%%edx\n");          
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
-          fprintf(fp, "idivl %s,%%eax\n", cogen_addr(right->info));
+          fprintf(fp, "movl %s,%%ebx\n", cogen_addr(right->info));
+          fprintf(fp, "idivl %%ebx\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
           break;
     case op_kind_rem:
@@ -324,12 +397,13 @@ void cogen_expr_app(FILE *fp, expr_t e){
       case op_kind_un_minus:
           cogen_expr(fp, left);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
-          fprintf(fp, "subl $0,%%eax\n");
-          fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
+          fprintf(fp, "movl $0,%%ebx\n");
+          fprintf(fp, "subl %%eax,%%ebx\n");
+          fprintf(fp, "movl %%ebx,%s\n", cogen_addr(e->info));
           break;
       case op_kind_un_plus:
           cogen_expr(fp, left);
-          fprintf(fp, "movl %s,%s\n", cogen_addr(left->info), cogen_addr(e->info));
+          cogen_mov(fp, left, e);
           break;
     case op_kind_logneg:
           cogen_expr(fp, left);
@@ -398,10 +472,10 @@ char* cogen_mov_reg(FILE *fp, expr_t e, reg_t reg){
 void cogen_expr(FILE *fp, expr_t e){
   switch(e->kind){
     case expr_kind_int_literal:
-      printf("# int_literal found, do nothing\n");
+      fprintf(fp, "# int_literal found, do nothing\n");
       break;
     case expr_kind_id:      
-      printf("# id found, do nothing\n");
+      fprintf(fp, "# id found, do nothing\n");
       break;
     case expr_kind_paren:
       cogen_expr(fp, e->u.p);

@@ -1,5 +1,7 @@
 int f()
 {
-  return 10000 - 729 - 918;
+  if (0) 
+    return 100;
+  else 
+    return 1 == 1;
 }
-

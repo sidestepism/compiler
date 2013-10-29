@@ -31,7 +31,7 @@ env_t mk_env(env_t parent)
  */
 env_t scan_syntree_program(program_t prog)
 {
-	printf("call: scan_syntree_program\n");
+	// printf("call: scan_syntree_program\n");
 	env_t global_env = mk_env(NULL);
     global_env->info_list = mk_syntree_info_list();
 
@@ -49,7 +49,7 @@ env_t scan_syntree_program(program_t prog)
  */
 env_t scan_syntree_fun_def(fun_def_t fun_def, env_t env_global)
 {
-	printf("call: scan_syntree_fun_def\n");
+	// printf("call: scan_syntree_fun_def\n");
 	env_t env = mk_env(env_global);
     env->info_list = mk_syntree_info_list();
 
@@ -183,6 +183,7 @@ env_t scan_syntree_expr(expr_t e, env_t env)
 		case expr_kind_paren:
 			// ただのカッコ
 			env = scan_syntree_expr(e->u.p, env);
+			e->info = e->u.p->info;
 		break;
 		case expr_kind_app:
 			;
