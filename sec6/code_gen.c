@@ -246,11 +246,14 @@ void cogen_expr_app(FILE *fp, expr_t e){
     case op_kind_none:
       break;
     case op_kind_fun:/* 組み込み演算子ではない, 関数 */
-      fprintf(fp, "call %s\n", e->u.a.f);
+      ;
       int i;
       int size = expr_list_sz(e->u.a.args);
       for(i = 0 ; i < size; i++){
       fprintf(fp, "movl $%s, %d(%%esp)\n", expr_list_get(e->u.a.args, i)->u.s, 4*i);
+      fprintf(fp, "call %s\n", e->u.a.f);
+      e->info->kind = var_kind_reg;
+      e->info->reg = reg_eax;
     }
       
       break;
@@ -280,27 +283,38 @@ void cogen_expr_app(FILE *fp, expr_t e){
       // pr_ins(&ins);
       break;
     case op_kind_bin_plus:
-          // もっと効率化できるぞ
+          // もっと効率化できるぞ      
+          cogen_expr(fp, right);
+          cogen_expr(fp, left);
+          fprintf(fp, "# bin_plus \n");
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "addl %s,%%eax\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
           break;
     case op_kind_bin_minus:
+          cogen_expr(fp, right);
+          cogen_expr(fp, left);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "subl %s,%%eax\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
           break;
     case op_kind_mult:
+          cogen_expr(fp, right);
+          cogen_expr(fp, left);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "imull %s,%%eax\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
           break;
     case op_kind_div:
+          cogen_expr(fp, right);
+          cogen_expr(fp, left);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "idivl %s,%%eax\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
           break;
     case op_kind_rem:
+          cogen_expr(fp, right);
+          cogen_expr(fp, left);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "reml %%eax,%s\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
@@ -308,14 +322,17 @@ void cogen_expr_app(FILE *fp, expr_t e){
     break;
       /*5+5, x+5, 5+x*/
       case op_kind_un_minus:
+          cogen_expr(fp, left);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "subl $0,%%eax\n");
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
           break;
       case op_kind_un_plus:
+          cogen_expr(fp, left);
           fprintf(fp, "movl %s,%s\n", cogen_addr(left->info), cogen_addr(e->info));
           break;
     case op_kind_logneg:
+          cogen_expr(fp, left);
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "leal %%eax,%s\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));

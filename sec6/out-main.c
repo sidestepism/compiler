@@ -1,5 +1,5 @@
 #include <stdio.h>
 
 int main(){
- printf("10! = %d", func(10));
+ printf("1 + 2 + 3 = %d", f());
 }
