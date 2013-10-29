@@ -250,7 +250,7 @@ void cogen_expr_app(FILE *fp, expr_t e){
       int i;
       int size = expr_list_sz(e->u.a.args);
       for(i = 0 ; i < size; i++){
-      fprintf(fp, "movl $%s %d(%%esp)\n", expr_list_get(e->u.a.args, i)->u.s, 4*i);
+      fprintf(fp, "movl $%s, %d(%%esp)\n", expr_list_get(e->u.a.args, i)->u.s, 4*i);
     }
       
       break;
