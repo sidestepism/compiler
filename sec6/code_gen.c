@@ -246,8 +246,13 @@ void cogen_expr_app(FILE *fp, expr_t e){
     case op_kind_none:
       break;
     case op_kind_fun:/* 組み込み演算子ではない, 関数 */
-          // @TODO 引数をちゃんと渡す
       fprintf(fp, "call %s\n", e->u.a.f);
+      int i;
+      int size = expr_list_sz(e->u.a.args);
+      for(i = 0 ; i < size; i++){
+      fprintf(fp, "movl $%s %d(%%esp)\n", expr_list_get(e->u.a.args, i)->u.s, 4*(size-i-1));
+    }
+      
       break;
     case op_kind_assign:/* a = b 2項だから命令とvar返す */
       // 右辺を評価
