@@ -198,6 +198,7 @@ typedef struct fun_def
   env_t env;
 } * fun_def_t;
 
+
 /* 関数定義のリスト */
 typedef struct fun_def_list * fun_def_list_t;
 
