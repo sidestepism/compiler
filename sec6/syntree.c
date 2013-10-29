@@ -8,7 +8,7 @@
 #include "list.h"
 #include "syntree.h"
 #include "env.h"
-
+#include "code_gen.h"
 
 /* 
  * ----------------------------------
@@ -26,8 +26,6 @@ static expr_t alloc_expr(char * filename, int line, expr_kind_t kind)
   e->filename = filename;
   e->line = line;
   e->kind = kind;
-  // e->env = mk_env();
-  // e->env->expr = e;
   e->info = NULL;
   return e;
 }
@@ -398,6 +396,11 @@ void pr_expr(FILE * fp, expr_t e)
   default:
     assert(0);
   }
+  if(e->info == NULL){
+    printf("(NULL)");
+  }else{
+    printf("(%s, %d)", cogen_pr_reg(e->info->reg), e->info->offset);
+  }
 }
 
 /* 変数宣言を表示 */
@@ -491,11 +494,11 @@ void pr_stmt(FILE * fp, stmt_t s)
     assert(0);
   }
 
-  if(s->info != NULL){
-    printf("(%d)\n", s->info->offset);
-  }else{
-    printf("(NULL)\n");
-  }
+  // if(s->info != NULL){
+  //   printf("(%d)\n", s->info->offset);
+  // }else{
+  //   printf("(NULL)\n");
+  // }
 }
 
 /* 関数定義を表示 */

@@ -68,7 +68,7 @@ env_t scan_syntree_fun_def(fun_def_t fun_def, env_t env_global)
 // 宣言のリストを処理
 env_t scan_syntree_decls(var_decl_list_t decls, env_t env)
 {
-	printf("call: scan_syntree_decls\n");
+	// printf("call: scan_syntree_decls\n");
 	int n = var_decl_list_sz(decls);
 	int i;
 	for (i = 0; i < n; i++) {
@@ -90,7 +90,7 @@ env_t scan_syntree_decls(var_decl_list_t decls, env_t env)
 
 env_t scan_syntree_params(var_decl_list_t decls, env_t env)
 {
-	printf("call: scan_syntree_params\n");
+	// printf("call: scan_syntree_params\n");
 	// 引数を取る数をチェック
 	int n = var_decl_list_sz(decls);
 	int i;
@@ -112,10 +112,9 @@ env_t scan_syntree_params(var_decl_list_t decls, env_t env)
 
 env_t scan_syntree_stmt(stmt_t s, env_t p_env)
 {
-	printf("call: scan_syntree_stmt\n");
-
+	// printf("call: scan_syntree_stmt\n");
 	if(s->kind == stmt_kind_compound){
-		// 条件式
+		s->env = p_env;
 		// ブロックなので env を作る。親はp_env
 		env_t env = mk_env(p_env);
         env->info_list = mk_syntree_info_list();
@@ -133,6 +132,7 @@ env_t scan_syntree_stmt(stmt_t s, env_t p_env)
 		}
 	}else{
 		// ブロックではないのでいまある env を使う
+		s->env = p_env;
 		switch(s->kind){
 			case stmt_kind_expr:
 			case stmt_kind_return:
@@ -148,9 +148,14 @@ env_t scan_syntree_stmt(stmt_t s, env_t p_env)
 			break;
 
 			case stmt_kind_if:
+				// 条件式
+				scan_syntree_expr(s->u.i.e, p_env);
+				// then
 				scan_syntree_stmt(s->u.i.th, p_env);
+				// else
 				if(s->u.i.el != NULL)scan_syntree_stmt(s->u.i.el, p_env);
-			break;
+                break;
+
 			case stmt_kind_while:
 				scan_syntree_expr(s->u.w.e, p_env);
 				scan_syntree_stmt(s->u.w.body, p_env);
@@ -162,7 +167,7 @@ env_t scan_syntree_stmt(stmt_t s, env_t p_env)
 
 env_t scan_syntree_expr(expr_t e, env_t env)
 {
-	printf("call: scan_syntree_expr\n");
+	// printf("call: scan_syntree_expr\n");
 
 	switch(e->kind){
 		case expr_kind_int_literal:
@@ -240,7 +245,7 @@ syntree_info_t mk_syntree_info()
 
 syntree_info_t env_add_syntree_info(env_t env, char* name, var_kind_t kind, reg_t reg, int offset)
 {
-	printf("call: env_add_syntree_info (name: %s, kind: %d, offset: %d)\n", name, kind, offset);
+	// printf("call: env_add_syntree_info (name: %s, kind: %d, offset: %d)\n", name, kind, offset);
 	syntree_info_t info = mk_syntree_info();
 	info->name = name;
 	info->kind = kind; // var_kind_memory, var_kind_register
@@ -260,7 +265,7 @@ syntree_info_t mk_syntree_info_imm(env_t env, int val){
 	return info;
 }
 syntree_info_t search_syntree_info_id(env_t env, char* name){
-	printf("call: search_syntree_info_id (name: %s)\n", name);
+	// printf("call: search_syntree_info_id (name: %s)\n", name);
 
 	// id でサーチして結果を返す
 	int i = 0; 
@@ -271,7 +276,7 @@ syntree_info_t search_syntree_info_id(env_t env, char* name){
 		syntree_info_t si = syntree_info_list_get(env->info_list, i);
 		if (si->name == NULL) continue;
 		if (strcmp(si->name, name) == 0){
-			printf("[found]: search_syntree_info_id (name: %s/%s, offset: %d)\n", si->name, name, si->offset);
+			// printf("[found]: search_syntree_info_id (name: %s/%s, offset: %d)\n", si->name, name, si->offset);
 			return si;
 		}
 	}
@@ -284,13 +289,13 @@ syntree_info_t search_syntree_info_id(env_t env, char* name){
 
 void pr_syntree_info_table(syntree_info_list_t l)
 {
-	printf("call: pr_syntree_info_table\n");
+	// printf("call: pr_syntree_info_table\n");
 	int n = syntree_info_list_sz(l);
     int i;
 
 	for (i = 0; i < n; i++) {
         syntree_info_t info = syntree_info_list_get(l, i);
-        printf("name: %s, offset: %d\n", info->name, info->offset);
+        // printf("name: %s, offset: %d\n", info->name, info->offset);
 
     }
 }

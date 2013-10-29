@@ -153,6 +153,7 @@ struct stmt
   int line;			/* 出現行番号 */
   stmt_kind_t kind;		/* 文の種類 */
   syntree_info_t info;
+  env_t env;
   /* u : 文の種類に応じた情報 */
   union {
     /* 式文, return文の場合. */
