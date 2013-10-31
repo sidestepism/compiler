@@ -11,7 +11,7 @@
 
 
 CC=gcc
-CFLAGS=-g -m32
+CFLAGS=-g
 
 C_FILES:=$(wildcard f*.c)
 EXE_FILES:=$(subst .c,.exe,$(C_FILES))

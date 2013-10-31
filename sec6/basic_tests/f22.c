@@ -1,4 +1,4 @@
 int f(int n)
 {
-  return n;
+  return !n;
 }
