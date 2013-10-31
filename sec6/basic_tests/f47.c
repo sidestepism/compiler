@@ -18,7 +18,6 @@ int f()
               j = j + 1;
             }
           i = i + 1;
-          continue;
         }
       c = c + i;
       i = i + 1;

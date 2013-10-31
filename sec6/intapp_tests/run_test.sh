@@ -24,7 +24,7 @@ benchmark()
 
     echo "=== cogen ===" 1>&2
     ./cogen ${input} > ${base}.s
-    gcc -o ${base}.cogen ${base}.s C0main.c
+    gcc -m32 -o ${base}.cogen ${base}.s C0main.c
     ./${base}.cogen $@ | tee ${base}.cogen.out
 
     diff ${base}.cogen.out ${base}.gcc.out > ${base}.diff

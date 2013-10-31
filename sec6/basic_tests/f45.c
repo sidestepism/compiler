@@ -7,8 +7,6 @@ int f()
   c = 0;
   while(i < 100)
     {
-      if(i >= 50)
-        break;
       c = c + i;
       i = i + 1;
     }

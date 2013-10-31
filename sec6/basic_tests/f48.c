@@ -15,12 +15,10 @@ int f()
           while(j < i)
             {
               if(j >= 50)
-                break;
               c = c + j;
               j = j + 1;
             }
           i = i + 1;
-          continue;
         }
       c = c + i;
       i = i + 1;
