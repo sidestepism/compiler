@@ -15,11 +15,11 @@ benchmark()
     shift
 
     echo "=== gcc ===" 1>&2
-    gcc -o ${base}.gcc ${input} C0main.c
+    gcc -m32 -o ${base}.gcc ${input} C0main.c
     ./${base}.gcc $@ | tee ${base}.gcc.out
 
     echo "=== gcc -O3 ===" 1>&2
-    gcc -O3 -o ${base}.gccO3 ${input} C0main.c    
+    gcc -m32 -O3 -o ${base}.gccO3 ${input} C0main.c    
     ./${base}.gccO3 $@ | tee ${base}.gccO3.out
 
     echo "=== cogen ===" 1>&2

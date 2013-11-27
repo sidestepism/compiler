@@ -18,6 +18,8 @@ env_t mk_env(env_t parent)
 	}
 	env->parent = parent;
 	env->info_list = mk_syntree_info_list();
+	env->start_label = NULL;
+	env->end_label = NULL;
 
 	if(parent != NULL){
 		env->decl_ptr = parent->decl_ptr;

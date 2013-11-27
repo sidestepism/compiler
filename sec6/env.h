@@ -17,8 +17,6 @@ void syntree_info_list_add(syntree_info_list_t l, syntree_info_t x); /* lにxを
 syntree_info_t syntree_info_list_get(syntree_info_list_t l, int i);  /* lのi番目の要素 */
 int syntree_info_list_sz(syntree_info_list_t l);      /* lの要素数 */
 
-
-
 typedef enum{
   reg_eax,
   reg_ebx,
@@ -31,7 +29,6 @@ typedef enum{
   reg_eip,
   reg_eflags
 } reg_t;
-
 
 typedef enum var_kind{
   var_kind_imm,
@@ -47,6 +44,8 @@ typedef struct env {
     int decl_ptr;
     int param_ptr;
     expr_t expr;
+    char* start_label;
+    char* end_label;
 } env;
 
 typedef struct syntree_info {

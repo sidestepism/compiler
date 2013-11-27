@@ -82,6 +82,7 @@ void cogen_stmt(FILE *fp, stmt_t s){
       cogen_stmt(fp, si);
     }
   }else{
+    env_t cur_env;
     // ブロックではないので処理
     switch(s->kind){
       case stmt_kind_expr:
@@ -175,11 +176,32 @@ void cogen_stmt(FILE *fp, stmt_t s){
             // すでに処理しているはず
       break;
       case stmt_kind_continue:
+        //  start_label
+        cur_env = s->env;
+        while(cur_env != NULL){
+          if(cur_env->start_label != NULL)break;
+          cur_env = cur_env->parent;
+        }
+        if(cur_env == NULL){
+          printf("syntax error: invalid break\n");
+          exit(1);
+        }
         fprintf(fp, "# continue\n");
+        fprintf(fp, "jmp %s\n", cur_env->start_label);        
       break;
       case stmt_kind_break:
-            // [todo] うまく動かない
-        fprintf(fp, "# break\n");
+        // end_label 
+        cur_env = s->env;
+        while(cur_env != NULL){
+          if(cur_env->end_label != NULL)break;
+          cur_env = cur_env->parent;
+        }
+        if(cur_env == NULL){
+          printf("syntax error: invalid break\n");
+          exit(1);
+        }
+         fprintf(fp, "# break\n");
+        fprintf(fp, "jmp %s\n", cur_env->end_label);        
       break;
 
         case stmt_kind_if:
@@ -251,15 +273,16 @@ void cogen_stmt(FILE *fp, stmt_t s){
             fprintf(fp, "# end_label \n");
             fprintf(fp, "%s: \n", end_label);
 
+            fprintf(fp, "# [if end]\n");
+
             // scan_syntree_stmt(s->u.i.th, p_env);
             // if(s->u.i.el != NULL)scan_syntree_stmt(s->u.i.el, p_env);
             break;
         case stmt_kind_while:
-            ;
-            start_label = get_label();
-            end_label = get_label();
+            s->env->start_label = start_label = get_label();
+            s->env->end_label = end_label = get_label();
 
-            fprintf(fp, "# while start_label \n");
+            fprintf(fp, "# [while start] start_label \n");
             fprintf(fp, "%s: \n", start_label);
 
             cogen_expr(fp, s->u.i.e);
@@ -304,6 +327,8 @@ void cogen_stmt(FILE *fp, stmt_t s){
             fprintf(fp, "jmp %s\n", start_label);
             
             fprintf(fp, "%s: \n", end_label);
+            fprintf(fp, "# [while end] \n");
+
             break;
 
     }
