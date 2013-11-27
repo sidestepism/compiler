@@ -10,7 +10,7 @@
 #
 
 
-CC=gcc
+CC=gcc-mp-4.7
 CFLAGS=-g -m32
 
 C_FILES:=$(wildcard f*.c)
@@ -22,11 +22,11 @@ all : $(CMP_FILES)
 
 %.exe : %.c main.c
 	./cogen $(COGEN_FLAGS) $*.c > $*.s 
-	gcc $(CFLAGS) -c $*.s
-	gcc $(CFLAGS) -o $@ $*.o $(BUILTIN) main.c
+	gcc-mp-4.7 $(CFLAGS) -c $*.s
+	gcc-mp-4.7 $(CFLAGS) -o $@ $*.o $(BUILTIN) main.c
 
 %.gexe : %.c main.c
-	gcc $(CFLAGS) -o $@ $^
+	gcc-mp-4.7 $(CFLAGS) -o $@ $^
 
 %.cmp : %.gexe %.exe
 	./$*.gexe > $*.gexe.out
