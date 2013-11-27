@@ -1,4 +1,4 @@
-This is pTeX, Version 3.141592-p3.1.11 (utf8.euc) (Web2C 7.5.4) (format=platex 2011.7.24)  13 NOV 2013 23:58
+This is pTeX, Version 3.141592-p3.1.11 (utf8.euc) (Web2C 7.5.4) (format=platex 2011.7.24)  28 NOV 2013 06:18
 **report.tex
 (./report.tex
 pLaTeX2e <2006/11/10>+0 (based on LaTeX2e <2003/12/01> patch level 0)
@@ -53,9 +53,9 @@ Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
 (/Applications/UpTeX.app/teTeX/share/texmf-dist/tex/latex/graphics/graphics.cfg
 File: graphics.cfg 2005/02/03 v1.3 graphics configuration of teTeX/TeXLive
 )
-Package graphics Info: Driver file: dvips.def on input line 81.
- (/Applications/UpTeX.app/teTeX/share/texmf-dist/tex/latex/graphics/dvips.def
-File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+Package graphics Info: Driver file: dvipdfm.def on input line 81.
+ (/Applications/UpTeX.app/teTeX/share/texmf-dist/tex/latex/dvipdfm/dvipdfm.def
+File: dvipdfm.def 1999/9/6 vx.x Driver-dependant file
 ))
 \Gin@req@height=\dimen121
 \Gin@req@width=\dimen122
@@ -106,16 +106,22 @@ LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
 (Font)              scaled to size 13.83836pt on input line 29.
 LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
 (Font)              scaled to size 13.83836pt on input line 29.
+File: result.png Graphic file (type bmp)
+ <result.png>
+LaTeX Font Info:    Font shape `JT1/mc/m/n' will be
+(Font)              scaled to size 8.64899pt on input line 45.
+LaTeX Font Info:    Font shape `JY1/mc/m/n' will be
+(Font)              scaled to size 8.64899pt on input line 45.
  [1
 
-] (./report.aux) ) 
+] [2] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 778 strings out of 94681
- 9222 string characters out of 1174371
- 60177 words of memory out of 1500000
- 4113 multiletter control sequences out of 10000+50000
- 12929 words of font info for 56 fonts, out of 1200000 for 2000
+ 770 strings out of 94681
+ 9122 string characters out of 1174371
+ 60786 words of memory out of 1500000
+ 4100 multiletter control sequences out of 10000+50000
+ 13509 words of font info for 59 fonts, out of 1200000 for 2000
  571 hyphenation exceptions out of 8191
- 25i,6n,21p,199b,256s stack positions out of 5000i,500n,6000p,200000b,5000s
+ 25i,6n,21p,488b,413s stack positions out of 5000i,500n,6000p,200000b,5000s
 
-Output written on report.dvi (1 page, 784 bytes).
+Output written on report.dvi (2 pages, 3060 bytes).
