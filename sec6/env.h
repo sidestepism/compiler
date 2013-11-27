@@ -43,9 +43,11 @@ typedef struct env {
     syntree_info_list_t info_list;
     int decl_ptr;
     int param_ptr;
+    int decl_max_ptr;
     expr_t expr;
     char* start_label;
     char* end_label;
+    char* fun_def_end_label;
 } env;
 
 typedef struct syntree_info {

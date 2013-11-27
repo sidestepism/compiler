@@ -20,10 +20,14 @@ env_t mk_env(env_t parent)
 	env->info_list = mk_syntree_info_list();
 	env->start_label = NULL;
 	env->end_label = NULL;
+	env->fun_def_end_label = NULL;
 
 	if(parent != NULL){
 		env->decl_ptr = parent->decl_ptr;
+		env->decl_max_ptr = parent->decl_max_ptr;
 		env->param_ptr = parent->param_ptr;
+	}else{
+		env->decl_max_ptr = -4;
 	}
 	return env;
 }
@@ -55,9 +59,9 @@ env_t scan_syntree_fun_def(fun_def_t fun_def, env_t env_global)
 	env_t env = mk_env(env_global);
     env->info_list = mk_syntree_info_list();
 
-
 	// 自分の持っている次に置く仮置きメモリのポインタの値 (ebp からのオフセット)
 	env->decl_ptr = -4;
+	env->decl_max_ptr = -4;
 	env->param_ptr = 8;
 
 	scan_syntree_params(fun_def->params, env);
@@ -132,6 +136,11 @@ env_t scan_syntree_stmt(stmt_t s, env_t p_env)
 			stmt_t si = stmt_list_get(s->u.c.body, i);
 			scan_syntree_stmt(si, env);
 		}
+
+		if(env->decl_ptr < p_env->decl_max_ptr){
+			p_env->decl_max_ptr = env->decl_ptr;
+		}
+
 	}else{
 		// ブロックではないのでいまある env を使う
 		s->env = p_env;
