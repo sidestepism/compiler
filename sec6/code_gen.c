@@ -4,6 +4,7 @@
 #include "code_gen.h"
 #include "list.h"
 #include "env.h"
+#include "assert.h"
 
 
 void cogen_program(FILE *fp, program_t ds){
@@ -13,7 +14,6 @@ void cogen_program(FILE *fp, program_t ds){
   for(i = 0; i < n; i++){
     fun_def_t d = fun_def_list_get(ds->fun_defs, i);
     cogen_fun_def(fp, d);
-
     // @TODO
   }
 }
@@ -68,6 +68,15 @@ void cogen_fun_def(FILE *fp, fun_def_t d){
 
 
 void cogen_stmt(FILE *fp, stmt_t s){
+  env_t cur_env;
+
+  cur_env = s->env;
+  while(cur_env != NULL){
+    if(cur_env->end_label != NULL) fprintf(fp, "# end_label: %s\n", cur_env->end_label);
+    cur_env = cur_env->parent;
+  }
+  fprintf(fp, "############\n");
+
   // fprintf(fp, "call: scan_syntree_stmt\n");
     char* start_label;
     char* end_label;
@@ -82,7 +91,6 @@ void cogen_stmt(FILE *fp, stmt_t s){
       cogen_stmt(fp, si);
     }
   }else{
-    env_t cur_env;
     // ブロックではないので処理
     switch(s->kind){
       case stmt_kind_expr:
@@ -170,16 +178,16 @@ void cogen_stmt(FILE *fp, stmt_t s){
             fprintf(fp, "movl %s, %%eax\n", cogen_addr(s->u.e->info));
             break;
       case stmt_kind_empty:
-        fprintf(fp, "# empty\n");
+//        fprintf(fp, "# empty\n");
       break;
       case stmt_kind_compound:
             // すでに処理しているはず
       break;
       case stmt_kind_continue:
         //  start_label
-        cur_env = s->env;
+        cur_env = s->env->parent;
         while(cur_env != NULL){
-          if(cur_env->start_label != NULL)break;
+          if(cur_env->start_label != NULL) break;
           cur_env = cur_env->parent;
         }
         if(cur_env == NULL){
@@ -191,15 +199,19 @@ void cogen_stmt(FILE *fp, stmt_t s){
       break;
       case stmt_kind_break:
         // end_label 
-        cur_env = s->env;
+        cur_env = s->env->parent;
+        fprintf(fp, "# break search start\n");
+
         while(cur_env != NULL){
-          if(cur_env->end_label != NULL)break;
+          if(cur_env->end_label != NULL) break;
           cur_env = cur_env->parent;
+          fprintf(fp, "# searching .. \n");
         }
         if(cur_env == NULL){
           printf("syntax error: invalid break\n");
           exit(1);
         }
+         fprintf(fp, "# break search found!\n");
          fprintf(fp, "# break\n");
         fprintf(fp, "jmp %s\n", cur_env->end_label);        
       break;
@@ -274,13 +286,16 @@ void cogen_stmt(FILE *fp, stmt_t s){
             fprintf(fp, "%s: \n", end_label);
 
             fprintf(fp, "# [if end]\n");
-
             // scan_syntree_stmt(s->u.i.th, p_env);
             // if(s->u.i.el != NULL)scan_syntree_stmt(s->u.i.el, p_env);
             break;
         case stmt_kind_while:
-            s->env->start_label = start_label = get_label();
-            s->env->end_label = end_label = get_label();
+            assert(s->u.w.body->env->start_label == NULL);
+            assert(s->u.w.body->env->end_label == NULL);
+            // s->env->start_label = start_label = get_label();
+            // s->env->end_label = end_label = get_label();
+            s->u.w.body->env->start_label = start_label = get_label();
+            s->u.w.body->env->end_label = end_label = get_label();
 
             fprintf(fp, "# [while start] start_label \n");
             fprintf(fp, "%s: \n", start_label);
@@ -319,15 +334,14 @@ void cogen_stmt(FILE *fp, stmt_t s){
                 fprintf(fp, "# [error:] non eflags\n");
                 exit(1);
             }
-
-
+ 
             cogen_stmt(fp, s->u.w.body);
             
-            fprintf(fp, "# jumpto -> start_label \n");
+            fprintf(fp, "# jumpto -> start_label (%s)\n", start_label);
             fprintf(fp, "jmp %s\n", start_label);
             
+            fprintf(fp, "# [while end] %s\n", end_label);
             fprintf(fp, "%s: \n", end_label);
-            fprintf(fp, "# [while end] \n");
 
             break;
 
@@ -337,7 +351,7 @@ void cogen_stmt(FILE *fp, stmt_t s){
 
 void cogen_expr_app(FILE *fp, expr_t e){
 
-  fprintf(fp, "# [label] cogen_expr_app \n");
+//  fprintf(fp, "# [label] cogen_expr_app \n");
   expr_t left, right;
   if(expr_list_sz(e->u.a.args) > 0){
       left = expr_list_get(e->u.a.args, 0);
@@ -430,7 +444,6 @@ void cogen_expr_app(FILE *fp, expr_t e){
           // もっと効率化できるぞ      
           cogen_expr(fp, left);
           cogen_expr(fp, right);
-          fprintf(fp, "# bin_plus \n");
           fprintf(fp, "movl %s,%%eax\n", cogen_addr(left->info));
           fprintf(fp, "addl %s,%%eax\n", cogen_addr(right->info));
           fprintf(fp, "movl %%eax,%s\n", cogen_addr(e->info));
@@ -600,10 +613,8 @@ void cogen_mov_reg(FILE *fp, expr_t e, reg_t reg){
 void cogen_expr(FILE *fp, expr_t e){
   switch(e->kind){
     case expr_kind_int_literal:
-      fprintf(fp, "# int_literal found, do nothing\n");
       break;
     case expr_kind_id:      
-      fprintf(fp, "# id found, do nothing\n");
       break;
     case expr_kind_paren:
       cogen_expr(fp, e->u.p);
