@@ -1,0 +1,53 @@
+%!TEX encoding = UTF-8 Unicode
+\documentclass{jsarticle}
+\usepackage[dvips]{graphicx}
+\usepackage{url}
+
+\begin{document}
+
+%図番号に節番号を付加。節番号-図番号(図番号は節ごとに付ける)。
+%http://www.biwako.shiga-u.ac.jp/sensei/kumazawa/tex/011.html
+ \makeatletter
+    \renewcommand{\thefigure}{
+    \thesection.\arabic{figure}}
+    \@addtoreset{figure}{section}
+  \makeatother
+
+%表番号に節番号を付加。節番号-図番号(表番号は節ごとに付ける)。
+%http://www.biwako.shiga-u.ac.jp/sensei/kumazawa/tex/011.html
+  \makeatletter
+    \renewcommand{\thetable}{%
+    \thesection.\arabic{table}}
+   \@addtoreset{table}{section}
+  \makeatother
+
+\title{コンパイラ実験 レポート}
+\author{author}
+\maketitle
+
+
+\section{達成度に関する報告}
+
+字句解析器, 構文解析器, コード生成器すべてが完成した。すべてのテストデータについて正しい出力が得られた。
+
+\section{追加課題}
+
+ポインタを実装したい。
+
+\section{速度}
+
+
+
+\section{コード生成器}
+
+
+\section{参考文献}
+
+\begin{thebibliography}{99}
+ \item aaa
+ \item bbb
+ \item ccc
+ \item ddd
+\end{thebibliography}
+
+\end{document}
